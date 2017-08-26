@@ -1,0 +1,36 @@
+@import 'base';
+@import '~bootstrap/scss/bootstrap.scss';
+
+// Some best-practice CSS that's useful for most apps
+// Just remove them if they're not what you want
+html {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+
+// Contact Card
+.contact-card {
+	background: lightgray;
+	margin-top: 15px;
+
+	.card-line {
+		font-size: 18px;
+		margin-bottom: 5px;
+	}
+	p{
+		font-size:16px;
+	}
+}
