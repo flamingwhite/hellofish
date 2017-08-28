@@ -1,5 +1,6 @@
 @import 'base';
 @import '~bootstrap/scss/bootstrap.scss';
+@import 'material-ui.scss';
 
 // Some best-practice CSS that's useful for most apps
 // Just remove them if they're not what you want
@@ -30,7 +31,7 @@ body {
 		font-size: 18px;
 		margin-bottom: 5px;
 	}
-	p{
+	div{
 		font-size:16px;
 	}
 }

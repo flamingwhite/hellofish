@@ -30,11 +30,11 @@ const columns = [{
 }];
 
 const ContactList = props => {
-	const { contacts, search } = props;
+	const { contacts, ...rest} = props;
 	return (
 		<Row gutter={15}>
 			{
-				contacts.map(ct => <Col xs={24} sm={12} md={6}> <ContactCard search={search} info={ct} key={ct.id} /> </Col>)
+				contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
 			}
 		</Row>	
 	)

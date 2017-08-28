@@ -28,19 +28,21 @@ const columns = [
 ];
 
 const ContactCard = props => {
-	const { info, search } = props;
+	const { info, search, onEditClick } = props;
 	// const { name, age, email, phone, search} = props;
 	const { name, ...rest } = info;
 	const nameTitle = <p><SearchHighlight search={search} value={name} /></p>;
 
+	console.log('search in cars', search);
+
 	const renderRow = (label, value) => (
-		<p>
+		<div key={label}>
 			<p style={{ fontWeight: 'bold', fontSize: 12, color:'darkGray' }}>{label}</p>
 			<SearchHighlight search={search} value={value}/>
-		</p>	
+		</div>	
 	)
 	return (
-		<Card title={nameTitle} extra={<a href="#">More</a>}  className="contact-card">
+		<Card title={nameTitle} extra={<a onClick={() => onEditClick(info)}>Edit</a>}  className="contact-card">
 			<Row >
 				<Col  className="card-text">
 					{

@@ -13,9 +13,11 @@ const RichObj = obj => obj ? obj : {};
 
 const getFormValues = curry((form, state) => (RichObj(state.form[form])).values);
 
+const getErrors = (values, validate) => validate ? validate(values) : {};
+
 
 const reduxFormValues = (config) => Cmp => {
-	const { form, propName = 'formValues'} = config;
+	const { form, propName = 'formValues', validate} = config;
 
 
 	@connect(
@@ -34,7 +36,10 @@ const reduxFormValues = (config) => Cmp => {
 			}
 		}
 		render() {
-			return ( <Cmp { ...this.props } />);
+			const { formValues } = this.props;
+			console.log('formvalues', this.props[propName]);
+
+			return ( <Cmp { ...this.props } errors={getErrors(formValues, validate)} />);
 		}
 	}
 

@@ -57,6 +57,7 @@ config.module.rules.push({
     query: {
       cacheDirectory: true,
       plugins: [
+		"transform-decorators-legacy",
         'babel-plugin-transform-class-properties',
         'babel-plugin-syntax-dynamic-import',
         [

@@ -2,14 +2,22 @@ import React from 'react';
 import R from 'ramda';
 
 const SearchHighlight = props => {
-	const { search, value = '', bg = 'yellow',  ...rest } = props;
+	const { search, value = '', bg = '#ff9632',  ...rest } = props;
 
-	const str = value.split(search)//.join(`<span style=${{ backgroundColor: bg }}>${search}</span>`);
+	if (!search) {
+		return <span>{value}</span>;
+	}
+
+	const buildStr = (search, value, result = []) => {
+		if (!search || !value.toLowerCase().includes(search.toLowerCase())) return result.concat(value);
+		let index = value.toLowerCase().indexOf(search.toLowerCase());
+		return buildStr(search, value.slice(index + search.length), result.concat([value.slice(0, index), <span style={{ backgroundColor: bg }}>{value.slice(index, index + search.length)}</span>]))
+	}
+
 
 	return (
 		<span {...rest}>
-			{R.init(str).map(v => <span>{v}<span style={{ backgroundColor: bg }}>{search}</span></span>)}
-			{R.last(str)}
+			{buildStr(search, value)}
 		</span>
 	)
 
