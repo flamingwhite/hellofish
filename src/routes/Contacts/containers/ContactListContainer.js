@@ -3,7 +3,7 @@ import {
 } from 'react-redux';
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
-import {Input, Modal} from 'antd';
+import {Input, Modal, Button} from 'antd';
 import { propContains } from '../../../lib/littleFn';
 import ContactItemForm from './ContactItemForm';
 import {createContact, updateContactById} from '../../../store/contactsQuery';
@@ -98,14 +98,15 @@ class ContactListContainer extends Component {
 					onSearch={value => console.log(value)}
 					onChange={onSearchChange}
 				/>
-				<button onClick={newContactClick}>Add New</button>
+				<Button style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>Create New</Button>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{
 					contactInEdit &&
 					<Modal title={"Edit " + contactInEdit.name}
-						visible={contactInEdit!=null}
+						visible={contactInEdit != null}
 						footer={null}
+						onCancel={onModalCancel}
 					>
 						<ContactItemForm onOk={updateContact} onCancel={onModalCancel} okText="Update" initData={contactInEdit} />
 					</Modal>	
@@ -115,6 +116,7 @@ class ContactListContainer extends Component {
 					<Modal title={"Create New Contact "}
 						visible={inNewMode}
 						footer={null}
+						onCancel={onModalCancel}
 					>
 						<ContactItemForm onOk={createContact} onCancel={onModalCancel} okText="Create" />
 					</Modal>	

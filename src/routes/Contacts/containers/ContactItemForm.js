@@ -27,6 +27,14 @@ const validation = ({ name='', email='', phone='', address='' }) => {
 	validate: validation
 })
 class ContactItemForm extends Component {
+	constructor(props) {
+		super(props);
+		this.submit = this.submit.bind(this);
+	}
+	submit() {
+
+
+	}
 	render() {
 		console.log('fields', this.props);
 		const {fields, name, phone, email, address, company, hasSubmitted, okText='Ok', cancelText='Cancel', onOk, onCancel} = this.props;
@@ -50,7 +58,7 @@ class ContactItemForm extends Component {
 					<input className="form-control" {...company}/>
 				</LabelFieldSet>
 				<Button type="primary" onClick={() => onOk(fields)}>{okText}</Button>
-				<Button type="default">{cancelText}</Button>
+				<Button type="default" onClick={onCancel}>{cancelText}</Button>
 
 			</div>
 		)

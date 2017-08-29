@@ -1,7 +1,7 @@
 const { getFireDB } = require('./fireConnection');
 const {fireRef} = require('../lib/firedog');
 
-const contactsRef = fireRef(getFireDB().ref('users/'));
+const contactsRef = fireRef(getFireDB().ref('contacts/'));
 
 export const contactsList = () => contactsRef.arrayStream();
 export const updateContact = contact => contactsRef.updateById(contact._id, contact);
