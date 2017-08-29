@@ -35,3 +35,36 @@ body {
 		font-size:16px;
 	}
 }
+
+.avatar-uploader,
+.avatar-uploader-trigger,
+.avatar {
+  width: 100%;
+}
+.avatar-uploader {
+  display: block;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.avatar-uploader-trigger {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 28px;
+  color: #999;
+}
+
+
+@media screen and (min-width: 1200px) {
+	.bricklayer-column-sizer {
+	  /* divide by 3. */
+	  width: 33.3%;
+	}
+  }
+  
+  @media screen and (min-width: 768px) {
+	.bricklayer-column-sizer {
+	  /* divide by 2. */
+	  width: 50%;
+	}
+  }

@@ -22,11 +22,6 @@ export const PageLayout = ({ children }) => (
 			<IndexLink to='/' activeClassName='page-layout__nav-item--active'>Home</IndexLink>
 			{' · '}
 		</Menu.Item>
-		<Menu.Item key="2">
-			<Link to='/contacts' activeClassName='page-layout__nav-item--active'>Contacts</Link>
-		
-		</Menu.Item>
-        <Menu.Item key="3">nav 3</Menu.Item>
       </Menu>
     </Header>
     <Content style={{ padding: '0 50px' }}>

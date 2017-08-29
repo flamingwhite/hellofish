@@ -61,6 +61,10 @@ const ContactCard = props => {
 					}
 				</Col>
 			</Row>
+			{
+				info.downloadURL &&
+				<img style={{ width: '100%' }} src={info.downloadURL}/>
+			}
 
 
 	  </Card>

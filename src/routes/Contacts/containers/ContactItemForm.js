@@ -5,13 +5,16 @@ import React, {Component} from 'react';
 import {Button, message, Popconfirm} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import validator from 'validator';
-import R from 'ramda';
 import simpleForm from '../../../lib/simpleForm';
+import ImageUploader from '../../../commonCmps/ImageUploader';
+import {getBusinessCardRef} from '../../../store/fireConnection';
+import createUUID from '../../../lib/uuidTool';
 
 
 const validation = ({ name='', email='', phone='', address='' }) => {
 
 	const err = {};
+	if (name.trim().length == 0) err.name = 'Name cannot be blank';
 	if (!validator.isEmail(email)) err.email = 'Email is not valid';
 	if (!validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
 	console.log('errs ', err);
@@ -29,22 +32,32 @@ class ContactItemForm extends Component {
 	constructor(props) {
 		super(props);
 		this.submit = this.submit.bind(this);
+		this.onFileSelect = this.onFileSelect.bind(this);
+		this.state = {cardImage: null, cardImageName: null};
+		
 	}
 	submit() {
 		const { fields, isFormValid, onOk, preSubmit } = this.props;
+		const { cardImage, cardImageName } = this.state;
 		preSubmit();
 		if (!isFormValid) {
 			message.error('Information is not valid');
 			return;
 		}
-		onOk(fields);
-
-
+		console.log('data ', {...fields, cardImage})
+		onOk({ ...fields, cardImage, cardImageName });
+	}
+	onFileSelect(file) {
+		console.log('on file select', file);
+		this.setState({ cardImage: file, cardImageName: createUUID()} );
+		// getBusinessCardRef().child('abc.jpg').put(file).then(d => console.log('file upload', d))
 	}
 	render() {
 		console.log('fields', this.props);
-		const { submit } = this;
-		const {fields, name, phone, email, address, company, website, instagram, facebook, hasSubmitted, okText='Ok', cancelText='Cancel', onOk, onCancel, isFormValid, showDelete, onDelete} = this.props;
+
+		const { submit, onFileSelect } = this;
+		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete } = this.props;
+		const { cardImage } = this.state;
 
 		return (
 			<div>
@@ -72,6 +85,11 @@ class ContactItemForm extends Component {
 				<LabelFieldSet label="Facebook" err={(hasSubmitted||facebook.touched)&&facebook.error}>
 					<input className="form-control" {...facebook}/>
 				</LabelFieldSet>	
+				{
+					!cardImage && initData&&initData.downloadURL &&
+					<img style={{ width: '100%' }} src={initData.downloadURL}/>
+				}
+				<ImageUploader onFileSelect={onFileSelect}/>
 				<Button type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
 				<Button style={{marginLeft:20}} type="default" onClick={onCancel}>{cancelText}</Button>
 				{

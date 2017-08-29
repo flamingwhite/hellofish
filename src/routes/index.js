@@ -13,7 +13,7 @@ import '../../node_modules/antd/dist/antd.css';
 export const createRoutes = (store) => ({
   path: '/',
   component: CoreLayout,
-  indexRoute: Home,
+  indexRoute: {path: '', component: ContactsView},
   childRoutes: [
     CounterRoute(store),
     {

@@ -27,4 +27,7 @@ if (env == 'production') {
 firebase.initializeApp(config);
 
 export const getFirebase = () => firebase;
+export const getFireStorage = () => firebase.storage();
+export const getFireStorageRef = () => firebase.storage().ref();
+export const getBusinessCardRef = () => firebase.storage().ref().child('businessCards');
 export const getFireDB = () => firebase.database();

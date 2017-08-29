@@ -77,7 +77,7 @@ const hiForm = passedIn => WrapCmp => {
 			}
 
 
-			return ( <WrapCmp {...this.props } {...pass } />
+			return ( <WrapCmp {...this.props } {...pass } initData={this.props.initData} />
 			)
 
 		}

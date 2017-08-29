@@ -5,8 +5,10 @@ import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
 import {Input, Modal, Button, message} from 'antd';
 import { propContains } from '../../../lib/littleFn';
+import {getBusinessCardRef} from '../../../store/fireConnection';
 import ContactItemForm from './ContactItemForm';
 import {createContact, updateContactById, deleteContactById} from '../../../store/contactsQuery';
+import '../../../styles/bricklayer.scss';
 
 @connect(
 	state => ({
@@ -16,8 +18,6 @@ import {createContact, updateContactById, deleteContactById} from '../../../stor
 class ContactListContainer extends Component {
 	constructor(props) {
 		super(props);
-		// props.dispatch(actions.fetchContacts());
-		console.log('does it happen');
 		this.state = {
 			searchKey: '',
 			visible: false,
@@ -31,10 +31,7 @@ class ContactListContainer extends Component {
 		this.newContactClick = this.newContactClick.bind(this);
 		this.createContact = this.createContact.bind(this);
 		this.deleteContact = this.deleteContact.bind(this);
-		
-		
-		
-		
+
 	}
 
 	onSearchChange(evt) {
@@ -43,10 +40,23 @@ class ContactListContainer extends Component {
 		});
 	}
 
-	updateContact(ct) {
-		console.log(ct, 'updated');
+	async updateContact(contact) {
+		const orig = this.state.contactInEdit;
+
+		let downloadURL = null;
+		if (contact.cardImage && contact.cardImageName && (orig.cardImageName!=contact.cardImageName)) {
+			const snap = await getBusinessCardRef().child(contact.cardImageName).put(contact.cardImage);
+			downloadURL = snap.downloadURL;
+		}
+
+		if (downloadURL) {
+			contact = { ...contact, downloadURL };
+		}
+
+
+		console.log(contact, 'updated');
 		console.log(this.state.contactInEdit)
-		updateContactById(this.state.contactInEdit._id, ct);
+		updateContactById(orig._id, contact);
 
 		this.setState({
 			contactInEdit: null,
@@ -75,7 +85,18 @@ class ContactListContainer extends Component {
 		})
 	}
 
-	createContact(contact) {
+
+	async createContact(contact) {
+		let downloadURL = null;
+		if (contact.cardImage && contact.cardImageName) {
+			const snap = await getBusinessCardRef().child(contact.cardImageName).put(contact.cardImage);
+			downloadURL = snap.downloadURL;
+		}
+
+		if (downloadURL) {
+			contact = { ...contact, downloadURL };
+		}
+
 		console.log(contact);
 		var x = createContact(contact);
 		console.log('xxxx', x);
@@ -118,7 +139,6 @@ class ContactListContainer extends Component {
 					onChange={onSearchChange}
 				/>
 				<Button style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>Create New</Button>
-				<Button style={{marginLeft:20}} icon="plus" onClick={()=>message.info('test mes')}>Create New</Button>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{

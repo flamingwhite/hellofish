@@ -3,18 +3,26 @@ import React from 'react';
 const LabelFieldSet = props => { 
 		let {label, noMargin, className, labelClassName, success, err, children, ...rest} = props;
 		return (
-			<fieldset style={{marginBottom:noMargin?null:'15px'}} {...rest} className={className||''+ ' form-group' } className={err?'has-error':''}>
+			<div style={{}} {...rest} className={className||''+ ' form-group row '} >
 				{
-					label&&<label className={labelClassName}>{label}</label>
+					label&&<label className={labelClassName||'col-2 col-form-label'}>{label}</label>
 				}
-				{children}
+				<div className="col-10">
+					{children}
+				</div>	
 				{
-					success&&<small className="text-success">{success}</small>
+					success&&
+					<span style={{ marginLeft: 104 }}>
+						<small className="text-success">{success}</small>
+					</span>	
 				}
 				{
-					err&&<small className="text-danger">{err}</small>
+					err &&
+					<span style={{ marginLeft: 104 }}>
+						<small className="text-danger">{err}</small>
+					</span>	
 				}
-			</fieldset>
+			</div>
 		);
 	};
 
