@@ -6,7 +6,7 @@ import React, {Component} from 'react';
 import {Input, Modal} from 'antd';
 import { propContains } from '../../../lib/littleFn';
 import ContactItemForm from './ContactItemForm';
-import {createContact, updateContact} from '../../../store/contactsQuery';
+import {createContact, updateContactById} from '../../../store/contactsQuery';
 
 @connect(
 	state => ({
@@ -43,6 +43,8 @@ class ContactListContainer extends Component {
 
 	updateContact(ct) {
 		console.log(ct, 'updated');
+		console.log(this.state.contactInEdit)
+		updateContactById(this.state.contactInEdit._id, ct);
 
 		this.setState({
 			contactInEdit: null,
@@ -102,23 +104,16 @@ class ContactListContainer extends Component {
 				{
 					contactInEdit &&
 					<Modal title={"Edit " + contactInEdit.name}
-						visible={contactInEdit}
-						onOk={updateContact}
-						onCancel={onModalCancel}
-						okText={"Update"}
-						cancelText={"Cancel"}
+						visible={contactInEdit!=null}
+						footer={null}
 					>
-						<ContactItemForm okText="Update" initData={contactInEdit} />
+						<ContactItemForm onOk={updateContact} onCancel={onModalCancel} okText="Update" initData={contactInEdit} />
 					</Modal>	
 				}
 				{
 					inNewMode &&
 					<Modal title={"Create New Contact "}
 						visible={inNewMode}
-						onOk={createContact}
-						onCancel={onModalCancel}
-						okText={"Create"}
-						cancelText={"Cancel"}
 						footer={null}
 					>
 						<ContactItemForm onOk={createContact} onCancel={onModalCancel} okText="Create" />
