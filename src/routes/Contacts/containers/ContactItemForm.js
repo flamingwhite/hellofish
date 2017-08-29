@@ -2,8 +2,7 @@ import {
 	connect
 } from 'react-redux';
 import React, {Component} from 'react';
-import {reduxForm, Field} from 'redux-form';
-import {reduxFormValues} from '../../../lib/reduxFormTool';
+import {Button} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import validator from 'validator';
 import R from 'ramda';
@@ -30,7 +29,7 @@ const validation = ({ name='', email='', phone='', address='' }) => {
 class ContactItemForm extends Component {
 	render() {
 		console.log('fields', this.props);
-		const { name, phone, email, address, company, hasSubmitted} = this.props;
+		const {fields, name, phone, email, address, company, hasSubmitted, okText='Ok', cancelText='Cancel', onOk, onCancel} = this.props;
 
 		return (
 			<div>
@@ -50,6 +49,8 @@ class ContactItemForm extends Component {
 				<LabelFieldSet label="Company" err={(hasSubmitted||company.touched)&&company.error}>
 					<input className="form-control" {...company}/>
 				</LabelFieldSet>
+				<Button type="primary" onClick={() => onOk(fields)}>{okText}</Button>
+				<Button type="default">{cancelText}</Button>
 
 			</div>
 		)

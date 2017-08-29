@@ -46,7 +46,7 @@ const ContactCard = props => {
 			<Row >
 				<Col  className="card-text">
 					{
-						columns.filter(c => !c.notShow && info[c.key]!=null).map(c => renderRow(c.label, info[c.key]))
+						columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key]))
 					}
 				</Col>
 			</Row>

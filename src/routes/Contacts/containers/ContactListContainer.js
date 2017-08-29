@@ -3,10 +3,10 @@ import {
 } from 'react-redux';
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
-import {actions} from '../contactsReducer';
 import {Input, Modal} from 'antd';
 import { propContains } from '../../../lib/littleFn';
 import ContactItemForm from './ContactItemForm';
+import {createContact, updateContact} from '../../../store/contactsQuery';
 
 @connect(
 	state => ({
@@ -16,18 +16,20 @@ import ContactItemForm from './ContactItemForm';
 class ContactListContainer extends Component {
 	constructor(props) {
 		super(props);
-		props.dispatch(actions.fetchContacts());
+		// props.dispatch(actions.fetchContacts());
 		console.log('does it happen');
 		this.state = {
 			searchKey: '',
 			visible: false,
-			contactInEdit: null
+			contactInEdit: null,
+			inNewMode: false
 		};
 		this.onSearchChange = this.onSearchChange.bind(this);
 		this.updateContact = this.updateContact.bind(this);
 		this.openContactDialog = this.openContactDialog.bind(this);
 		this.onModalCancel = this.onModalCancel.bind(this);
-		
+		this.newContactClick = this.newContactClick.bind(this);
+		this.createContact = this.createContact.bind(this);
 		
 		
 		
@@ -44,29 +46,44 @@ class ContactListContainer extends Component {
 
 		this.setState({
 			contactInEdit: null,
-			visible: false
+			inNewMode: false
 		})
 	}
 
 	openContactDialog(ct) {
 		this.setState({
 			contactInEdit: ct,
-			visible: true
+			inNewMode: false
 		});
 	}
 
 	onModalCancel() {
 		this.setState({
 			contactInEdit: null,
-			visible: false
+			inNewMode: false
 		});
 	}
 
+	newContactClick() {
+		this.setState({
+			contactInEdit: null,
+			inNewMode: true
+		})
+	}
+
+	createContact(contact) {
+		console.log(contact);
+		var x = createContact(contact);
+		this.setState({
+			inNewMode: false
+		});
+
+	}
 
 	render() {
-		const { onSearchChange, onModalCancel, updateContact, openContactDialog } = this;
+		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact } = this;
 		const { contacts } = this.props;
-		const { searchKey, visible, contactInEdit } = this.state;
+		const { searchKey, contactInEdit, inNewMode } = this.state;
 
 
 		console.log('searchkey is ', searchKey);
@@ -79,16 +96,32 @@ class ContactListContainer extends Component {
 					onSearch={value => console.log(value)}
 					onChange={onSearchChange}
 				/>
+				<button onClick={newContactClick}>Add New</button>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{
 					contactInEdit &&
 					<Modal title={"Edit " + contactInEdit.name}
-						visible={visible}
-						onOk={this.updateContact}
-						onCancel={this.onModalCancel}
+						visible={contactInEdit}
+						onOk={updateContact}
+						onCancel={onModalCancel}
+						okText={"Update"}
+						cancelText={"Cancel"}
 					>
-						<ContactItemForm initData={contactInEdit} />
+						<ContactItemForm okText="Update" initData={contactInEdit} />
+					</Modal>	
+				}
+				{
+					inNewMode &&
+					<Modal title={"Create New Contact "}
+						visible={inNewMode}
+						onOk={createContact}
+						onCancel={onModalCancel}
+						okText={"Create"}
+						cancelText={"Cancel"}
+						footer={null}
+					>
+						<ContactItemForm onOk={createContact} onCancel={onModalCancel} okText="Create" />
 					</Modal>	
 				}
 			</div>
