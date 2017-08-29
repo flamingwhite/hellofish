@@ -2,7 +2,7 @@ import React, {
 	Component
 } from 'react';
 import {
-	Upload,
+	Button,
 	Icon,
 	message
 } from 'antd';
@@ -64,17 +64,23 @@ class ImageUploader extends Component {
 		const {
 			onFileChange
 		} = this;
+		const { buttonText ='Click to Upload' } = this.props;
 
 		return (
 
 			<div>
-				<input type="file" onChange={onFileChange} />
+				<input style={{ display: 'none' }} type="file" ref={input => this.fileInput=input} onChange={onFileChange} />
 				{
 					imageUrl ?
-						<img src={imageUrl} alt="" className="avatar" /> :
-						<Icon type="plus" className="avatar-uploader-trigger" />
+						<img onClick={() => this.fileInput.click()} src={imageUrl} alt="" className="avatar" /> :
+						<Button onClick={() => this.fileInput.click()}>
+							<Icon type="upload" /> {buttonText}
+						</Button>
 					}
-				<button onClick={() => this.setState({file: null, imageUrl: null})}>Remove</button>
+				{
+					imageUrl &&
+					<Button type="danger" onClick={() => this.setState({file: null, imageUrl: null})}>Remove Image</Button>
+				}
 			</div>
     );
 	}

@@ -89,8 +89,8 @@ class ContactItemForm extends Component {
 					!cardImage && initData&&initData.downloadURL &&
 					<img style={{ width: '100%' }} src={initData.downloadURL}/>
 				}
-				<ImageUploader onFileSelect={onFileSelect}/>
-				<Button type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
+				<ImageUploader onFileSelect={onFileSelect} buttonText={"Upload Business Card"} />
+				<Button style={{marginTop:10}} type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
 				<Button style={{marginLeft:20}} type="default" onClick={onCancel}>{cancelText}</Button>
 				{
 					showDelete &&
