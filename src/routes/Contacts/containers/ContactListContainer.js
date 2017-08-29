@@ -3,10 +3,10 @@ import {
 } from 'react-redux';
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
-import {Input, Modal, Button} from 'antd';
+import {Input, Modal, Button, message} from 'antd';
 import { propContains } from '../../../lib/littleFn';
 import ContactItemForm from './ContactItemForm';
-import {createContact, updateContactById} from '../../../store/contactsQuery';
+import {createContact, updateContactById, deleteContactById} from '../../../store/contactsQuery';
 
 @connect(
 	state => ({
@@ -30,6 +30,8 @@ class ContactListContainer extends Component {
 		this.onModalCancel = this.onModalCancel.bind(this);
 		this.newContactClick = this.newContactClick.bind(this);
 		this.createContact = this.createContact.bind(this);
+		this.deleteContact = this.deleteContact.bind(this);
+		
 		
 		
 		
@@ -76,14 +78,31 @@ class ContactListContainer extends Component {
 	createContact(contact) {
 		console.log(contact);
 		var x = createContact(contact);
+		console.log('xxxx', x);
 		this.setState({
 			inNewMode: false
 		});
 
 	}
+	
+	deleteContact() {
+		const { _id, name } = this.state.contactInEdit;
+		deleteContactById(_id)
+			.then(() => {
+				message.success('Contact ' + name + ' removed');
+				this.setState({
+					contactInEdit: null
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				message.error('Error!');
+			})
+
+	}
 
 	render() {
-		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact } = this;
+		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact } = this;
 		const { contacts } = this.props;
 		const { searchKey, contactInEdit, inNewMode } = this.state;
 
@@ -99,6 +118,7 @@ class ContactListContainer extends Component {
 					onChange={onSearchChange}
 				/>
 				<Button style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>Create New</Button>
+				<Button style={{marginLeft:20}} icon="plus" onClick={()=>message.info('test mes')}>Create New</Button>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{
@@ -108,7 +128,7 @@ class ContactListContainer extends Component {
 						footer={null}
 						onCancel={onModalCancel}
 					>
-						<ContactItemForm onOk={updateContact} onCancel={onModalCancel} okText="Update" initData={contactInEdit} />
+						<ContactItemForm onOk={updateContact} onCancel={onModalCancel} okText="Update" showDelete={true} onDelete={deleteContact} initData={contactInEdit}  />
 					</Modal>	
 				}
 				{

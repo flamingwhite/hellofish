@@ -24,6 +24,17 @@ const columns = [
 	{
 		key: 'company',
 		label: 'Company',
+	},
+	{
+		key: 'website',
+		label: 'Website'
+	},
+	{
+		key: 'instagram',
+		label: 'Instagram'
+	}, {
+		key: 'facebook',
+		label: 'Facebook'
 	}
 ];
 

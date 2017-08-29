@@ -2,7 +2,7 @@ import {
 	connect
 } from 'react-redux';
 import React, {Component} from 'react';
-import {Button} from 'antd';
+import {Button, message, Popconfirm} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import validator from 'validator';
 import R from 'ramda';
@@ -11,10 +11,9 @@ import simpleForm from '../../../lib/simpleForm';
 
 const validation = ({ name='', email='', phone='', address='' }) => {
 
-	const err = {
-		email: validator.isEmail(email)? null: 'Email is not valid',
-		phone: validator.isMobilePhone(phone, 'any')? null: 'Phone is not valid',
-	};
+	const err = {};
+	if (!validator.isEmail(email)) err.email = 'Email is not valid';
+	if (!validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
 	console.log('errs ', err);
 	return err;
 };
@@ -23,7 +22,7 @@ const validation = ({ name='', email='', phone='', address='' }) => {
 
 @connect()
 @simpleForm({
-	fields: ['name', 'email', 'phone', 'company', 'address'],
+	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook'],
 	validate: validation
 })
 class ContactItemForm extends Component {
@@ -32,16 +31,23 @@ class ContactItemForm extends Component {
 		this.submit = this.submit.bind(this);
 	}
 	submit() {
+		const { fields, isFormValid, onOk, preSubmit } = this.props;
+		preSubmit();
+		if (!isFormValid) {
+			message.error('Information is not valid');
+			return;
+		}
+		onOk(fields);
 
 
 	}
 	render() {
 		console.log('fields', this.props);
-		const {fields, name, phone, email, address, company, hasSubmitted, okText='Ok', cancelText='Cancel', onOk, onCancel} = this.props;
+		const { submit } = this;
+		const {fields, name, phone, email, address, company, website, instagram, facebook, hasSubmitted, okText='Ok', cancelText='Cancel', onOk, onCancel, isFormValid, showDelete, onDelete} = this.props;
 
 		return (
 			<div>
-				{JSON.stringify(this.props)}	
 				<LabelFieldSet label="Name" err={(hasSubmitted||name.touched)&&name.error}>
 					<input className="form-control" {...name}/>
 				</LabelFieldSet>
@@ -57,8 +63,23 @@ class ContactItemForm extends Component {
 				<LabelFieldSet label="Company" err={(hasSubmitted||company.touched)&&company.error}>
 					<input className="form-control" {...company}/>
 				</LabelFieldSet>
-				<Button type="primary" onClick={() => onOk(fields)}>{okText}</Button>
-				<Button type="default" onClick={onCancel}>{cancelText}</Button>
+				<LabelFieldSet label="Website" err={(hasSubmitted||website.touched)&&website.error}>
+					<input className="form-control" {...website}/>
+				</LabelFieldSet>
+				<LabelFieldSet label="Instagram" err={(hasSubmitted||instagram.touched)&&instagram.error}>
+					<input className="form-control" {...instagram}/>
+				</LabelFieldSet>
+				<LabelFieldSet label="Facebook" err={(hasSubmitted||facebook.touched)&&facebook.error}>
+					<input className="form-control" {...facebook}/>
+				</LabelFieldSet>	
+				<Button type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
+				<Button style={{marginLeft:20}} type="default" onClick={onCancel}>{cancelText}</Button>
+				{
+					showDelete &&
+					<Popconfirm title="Are you sure to delete this contact?" onConfirm={onDelete} onCancel={() => { }} okText="Yes" cancelText="No">
+						<Button style={{float: 'right'}} type="danger" ghost >Delete</Button>
+				  </Popconfirm>
+				}
 
 			</div>
 		)
