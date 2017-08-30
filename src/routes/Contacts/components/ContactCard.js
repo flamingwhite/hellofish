@@ -56,7 +56,7 @@ const ContactCard = props => {
 		</div>	
 	)
 	return (
-		<Card title={nameTitle} extra={<a onClick={() => onEditClick(info)}>Edit</a>}  className="contact-card">
+		<Card style={{margin:5}} title={nameTitle} extra={<a onClick={() => onEditClick(info)}>Edit</a>}  className="contact-card">
 			<Row >
 				<Col  className="card-text">
 					{

@@ -1,7 +1,7 @@
 import React from 'react';
 import ContactCard from './ContactCard';
 import {Row, Col} from 'antd';
-import Brick from 'bricklayer';
+import Masonry from 'react-masonry-component';
 
 const style = {
 	card: {
@@ -31,23 +31,32 @@ const columns = [{
 }];
 
 export default class ContactList extends React.Component {
-	componentDidMount() {
-		const { list } = this;
-		// this.myBrick = new Brick(list);
-	}
 	render() {
 		const { contacts, ...rest} = this.props;
 		return (
-			<Row className="bricklayer" gutter={15} ref={c => this.list = c}>
+
+			<Masonry style={{width: '100%'}} gutter={15} ref={c => this.list = c}>
 				{
-					contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
+					contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6} xl={4}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
 				}
-			</Row>	
+
+		</Masonry>
 		)
 
 	}
 }
 
+	// render() {
+	// 	const { contacts, ...rest} = this.props;
+	// 	return (
+	// 		<Row className="bricklayer" gutter={15} ref={c => this.list = c}>
+	// 			{
+	// 				contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
+	// 			}
+	// 		</Row>	
+	// 	)
+
+	// }
 // const ContactList = props => {
 // 	const { contacts, ...rest} = props;
 // 	return (

@@ -141,15 +141,14 @@ class ContactListContainer extends Component {
 
 		console.log('searchkey is ', searchKey);
 		return (
-			<div>
-				<Input.Search
-					size="large"	
+			<div className="row">
+				<Input
 					placeholder="input search text"
-					style={{ width: 400 }}
+					className="col-6 col-xs-8"
 					onSearch={value => console.log(value)}
 					onChange={onSearchChange}
 				/>
-				<Button style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>Create New</Button>
+				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{

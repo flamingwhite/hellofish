@@ -24,11 +24,11 @@ export const PageLayout = ({ children }) => (
 		</Menu.Item>
       </Menu>
     </Header>
-    <Content style={{ padding: '0 50px' }}>
-	<div style={{ background: '#fff', padding: 24, minHeight: 280 }}> {children} </div>
+    <Content style={{}}>
+	<div style={{ background: '#fff', padding: 18, paddingTop:5, minHeight: 280 }}> {children} </div>
     </Content>
     <Footer style={{ textAlign: 'center' }}>
-      Ant Design ©2016 Created by Ant UED
+      Designed For Moira
     </Footer>
   </Layout>
 
@@ -37,4 +37,6 @@ PageLayout.propTypes = {
   children: PropTypes.node,
 }
 
-export default PageLayout
+export default PageLayout;
+
+
