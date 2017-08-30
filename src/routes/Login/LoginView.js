@@ -33,7 +33,8 @@ class LoginView extends Component {
 
 	}
 
-	handleLogin() {
+	handleLogin(e) {
+		e.preventDefault();
 		const { username, password } = this.state;
 		console.log('loginwith', username, password);
 		signinWithFirebase(username, password)
@@ -67,11 +68,11 @@ class LoginView extends Component {
 				  <h2 className="login-header">Contacts Management</h2>
 				  <p className="login-author">By Yong</p>
 				  
-				<form className="login-form">
+				  <form className="login-form" onSubmit={handleLogin}>
 					<input type="text" placeholder="email" onChange={v=>handleInputChange('username', v)}/>
 					<input type="password" placeholder="password" onChange={v => handleInputChange('password', v)}/>
-					<button onClick={handleLogin}>login</button>
-					{/*<p className="message">Not registered? <a href="#">Create an account</a></p>*/}
+					<button type="submit">login</button>
+					<p className="message"> <a style={{cursor:'default'}}>Hope you like it :)</a></p>
 				</form>
 			  </div>
 			</div>

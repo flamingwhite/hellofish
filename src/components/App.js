@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import HomeView from '../routes/Home/components/HomeView';
 import LoginView from '../routes/Login/LoginView';
 import ContactsView from '../routes/Contacts/ContactsView';
+import EnsureLoginContainer from '../routes/EnsureLoginContainer/EnsureLoginContainer';
 import PageLayout from '../layouts/PageLayout';
 
 class App extends React.Component {
@@ -22,10 +23,13 @@ class App extends React.Component {
         <div style={{ height: '100%' }}>
 			<Router history={browserHistory}>
 				<Route path="/" component={PageLayout}>
-					<IndexRoute component={ContactsView}/>
-					<Route path="/home" component={HomeView}/>
+					<Route path="home" component={HomeView}/>
+					<Route component={EnsureLoginContainer}>
+						<IndexRoute component={ContactsView}/>
+					</Route>		
 				</Route>
-				<Route path='/login' component={LoginView} />
+				<Route path='login' component={LoginView} />
+
 			</Router>	
         </div>
       </Provider>
