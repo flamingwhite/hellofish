@@ -26,6 +26,8 @@ if (env == 'production') {
 
 firebase.initializeApp(config);
 
+export const signinWithFirebase = (username, password) => firebase.auth().signInWithEmailAndPassword(username, password);
+export const signoutWithFirebase = () => firebase.auth().signOut();
 export const getFirebase = () => firebase;
 export const getFireStorage = () => firebase.storage();
 export const getFireStorageRef = () => firebase.storage().ref();

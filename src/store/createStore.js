@@ -4,6 +4,8 @@ import { browserHistory } from 'react-router'
 import makeRootReducer from './reducers'
 import { updateLocation } from './location';
 import {contactsList} from './contactsQuery';
+import {getFirebase} from './fireConnection';
+import {actions as authActions} from './authReducer';
 
 const createStore = (initialState = {}) => {
   // ======================================================
@@ -39,7 +41,21 @@ const createStore = (initialState = {}) => {
   // To unsubscribe, invoke `store.unsubscribeHistory()` anytime
   store.unsubscribeHistory = browserHistory.listen(updateLocation(store));
 
+  //hook firebase contact list with redux
   contactsList().subscribe(list => store.dispatch({ type: 'FETCH_CONTACT', payload: list }));
+
+//listen to user login info
+	getFirebase().auth().onAuthStateChanged(user => {
+		if (user) {
+			console.log('user logged in', user);
+			store.dispatch(authActions.userLogin(user))
+		} else {
+			console.log('user logged out', user);
+			store.dispatch(authActions.userLogout());
+		}
+
+	})
+
 
 
 

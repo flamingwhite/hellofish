@@ -1,12 +1,15 @@
 import React from 'react'
-import { browserHistory, Router } from 'react-router'
+import { browserHistory, Router, Route, IndexRoute } from 'react-router'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'
+import HomeView from '../routes/Home/components/HomeView';
+import LoginView from '../routes/Login/LoginView';
+import ContactsView from '../routes/Contacts/ContactsView';
+import PageLayout from '../layouts/PageLayout';
 
 class App extends React.Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
-    routes: PropTypes.object.isRequired,
   }
 
   shouldComponentUpdate () {
@@ -17,7 +20,13 @@ class App extends React.Component {
     return (
       <Provider store={this.props.store}>
         <div style={{ height: '100%' }}>
-          <Router history={browserHistory} children={this.props.routes} />
+			<Router history={browserHistory}>
+				<Route path="/" component={PageLayout}>
+					<IndexRoute component={ContactsView}/>
+					<Route path="/home" component={HomeView}/>
+				</Route>
+				<Route path='/login' component={LoginView} />
+			</Router>	
         </div>
       </Provider>
     )
@@ -25,3 +34,14 @@ class App extends React.Component {
 }
 
 export default App
+
+
+//   render () {
+//     return (
+//       <Provider store={this.props.store}>
+//         <div style={{ height: '100%' }}>
+//           <Router history={browserHistory} children={this.props.routes} />
+//         </div>
+//       </Provider>
+//     )
+//   }

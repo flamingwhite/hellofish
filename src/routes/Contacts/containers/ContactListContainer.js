@@ -145,7 +145,6 @@ class ContactListContainer extends Component {
 				<Input
 					placeholder="input search text"
 					className="col-6 col-xs-8"
-					onSearch={value => console.log(value)}
 					onChange={onSearchChange}
 				/>
 				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
