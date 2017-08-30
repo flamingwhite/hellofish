@@ -35,6 +35,9 @@ const columns = [
 	}, {
 		key: 'facebook',
 		label: 'Facebook'
+	}, {
+		key: 'comments',
+		label: 'Comments'
 	}
 ];
 

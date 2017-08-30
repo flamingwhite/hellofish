@@ -43,20 +43,30 @@ class ContactListContainer extends Component {
 	async updateContact(contact) {
 		const orig = this.state.contactInEdit;
 
+		console.log('to update j', contact, orig);
+
 		let downloadURL = null;
-		if (contact.cardImage && contact.cardImageName && (orig.cardImageName!=contact.cardImageName)) {
+		if (contact.cardImage && contact.cardImageName && (orig.cardImage!=contact.cardImage)) {
 			const snap = await getBusinessCardRef().child(contact.cardImageName).put(contact.cardImage);
 			downloadURL = snap.downloadURL;
+		}
+		if (orig.downloadURL && !contact.downloadURL) {
+			// await getBusinessCardRef().child(orig.cardImage).delete().then(console.log);
+			console.log('==============','get into deleteimage');
+			contact.cardImageName = null;
+			contact.downloadURL = null;
+			
 		}
 
 		if (downloadURL) {
 			contact = { ...contact, downloadURL };
 		}
 
-
+		console.log('-----------------downloadURL,j', downloadURL);
 		console.log(contact, 'updated');
 		console.log(this.state.contactInEdit)
-		updateContactById(orig._id, contact);
+		await updateContactById(orig._id, contact);
+		message.success('Contact Updated')
 
 		this.setState({
 			contactInEdit: null,
@@ -98,8 +108,9 @@ class ContactListContainer extends Component {
 		}
 
 		console.log(contact);
-		var x = createContact(contact);
-		console.log('xxxx', x);
+		await createContact(contact);
+		message.success('Contact Created');
+		
 		this.setState({
 			inNewMode: false
 		});

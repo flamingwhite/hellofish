@@ -31,55 +31,59 @@ class ImageUploader extends Component {
 		super(props);
 		this.onFileChange = this.onFileChange.bind(this);
 		this.state = {
-			imageUrl: null
+			imageUrl: null,
+			imageLink: props.imageLink
 		};
+		this.onDelete = this.onDelete.bind(this);
+		
 
 	}
 
-	handleChange = (info) => {
-		if (info.file.status === 'done') {
-			// Get this url from response in real world.
-			getBase64(info.file.originFileObj, imageUrl => this.setState({
-				imageUrl
-			}));
-		}
-	}
+
 
 	onFileChange(e) {
 		const { onFileSelect } = this.props;
 		e.preventDefault();
 		const file = e.target.files[0];
-		getBase64(e.target.files[0], imageUrl => this.setState({
-				file,
-				imageUrl
-		}));
+		// getBase64(e.target.files[0], imageUrl => this.setState({
+		// 		file,
+		// 		imageUrl
+		// }));
 
 		onFileSelect&&onFileSelect(file);
 	}
 
+	onDelete() {
+		const { onDeleteFile } = this.props;
+		// this.setState({file: null, imageUrl: null})
+		onDeleteFile();
+	}
+
 	render() {
 		const {
-			imageUrl
+			imageUrl,
+			imageLink
 		} = this.state;
 		const {
-			onFileChange
+			onFileChange,
+			onDelete
 		} = this;
-		const { buttonText ='Click to Upload' } = this.props;
+		const { buttonText = 'Click to Upload', imageSrc } = this.props;
 
 		return (
 
 			<div>
 				<input style={{ display: 'none' }} type="file" ref={input => this.fileInput=input} onChange={onFileChange} />
 				{
-					imageUrl ?
-						<img onClick={() => this.fileInput.click()} src={imageUrl} alt="" className="avatar" /> :
+					imageSrc ?
+						<img onClick={() => this.fileInput.click()} src={imageSrc} alt="" className="avatar" /> :
 						<Button onClick={() => this.fileInput.click()}>
 							<Icon type="upload" /> {buttonText}
 						</Button>
 					}
 				{
-					imageUrl &&
-					<Button type="danger" onClick={() => this.setState({file: null, imageUrl: null})}>Remove Image</Button>
+					imageSrc &&
+					<Button type="danger" onClick={onDelete}>Remove Image</Button>
 				}
 			</div>
     );

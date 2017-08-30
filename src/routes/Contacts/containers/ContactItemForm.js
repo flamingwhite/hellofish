@@ -2,14 +2,13 @@ import {
 	connect
 } from 'react-redux';
 import React, {Component} from 'react';
-import {Button, message, Popconfirm} from 'antd';
+import {Button, message, Popconfirm, Popover} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import validator from 'validator';
 import simpleForm from '../../../lib/simpleForm';
-import ImageUploader from '../../../commonCmps/ImageUploader';
+import ImageViewer from '../../../commonCmps/ImageViewer';
 import {getBusinessCardRef} from '../../../store/fireConnection';
 import createUUID from '../../../lib/uuidTool';
-
 
 const validation = ({ name='', email='', phone='', address='' }) => {
 
@@ -21,11 +20,16 @@ const validation = ({ name='', email='', phone='', address='' }) => {
 	return err;
 };
 
+function getBase64(img, callback) {
+	const reader = new FileReader();
+	reader.addEventListener('load', () => callback(reader.result));
+	reader.readAsDataURL(img);
+}
 
 
 @connect()
 @simpleForm({
-	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook'],
+	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'comments'],
 	validate: validation
 })
 class ContactItemForm extends Component {
@@ -34,6 +38,14 @@ class ContactItemForm extends Component {
 		this.submit = this.submit.bind(this);
 		this.onFileSelect = this.onFileSelect.bind(this);
 		this.state = {cardImage: null, cardImageName: null};
+		this.onDeleteFile = this.onDeleteFile.bind(this);
+
+		this.state = {
+			cardImage: null,
+			cardImageName: null,
+			imageSrc : props.initData&&props.initData.downloadURL
+		};
+		
 		
 	}
 	submit() {
@@ -50,14 +62,22 @@ class ContactItemForm extends Component {
 	onFileSelect(file) {
 		console.log('on file select', file);
 		this.setState({ cardImage: file, cardImageName: createUUID()} );
+
 		// getBusinessCardRef().child('abc.jpg').put(file).then(d => console.log('file upload', d))
+		getBase64(file, imageSrc => this.setState({
+			imageSrc
+		}));
+	}
+	onDeleteFile() {
+		this.setState({ imageSrc: null, cardImage: null, cardImageName: null });
+
 	}
 	render() {
 		console.log('fields', this.props);
 
-		const { submit, onFileSelect } = this;
-		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete } = this.props;
-		const { cardImage } = this.state;
+		const { submit, onFileSelect, onDeleteFile } = this;
+		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete } = this.props;
+		const { cardImage, imageSrc } = this.state;
 
 		return (
 			<div>
@@ -85,11 +105,10 @@ class ContactItemForm extends Component {
 				<LabelFieldSet label="Facebook" err={(hasSubmitted||facebook.touched)&&facebook.error}>
 					<input className="form-control" {...facebook}/>
 				</LabelFieldSet>	
-				{
-					!cardImage && initData&&initData.downloadURL &&
-					<img style={{ width: '100%' }} src={initData.downloadURL}/>
-				}
-				<ImageUploader onFileSelect={onFileSelect} buttonText={"Upload Business Card"} />
+				<LabelFieldSet label="Comments" err={(hasSubmitted||comments.touched)&&comments.error}>
+					<textarea className="form-control" {...comments}/>
+				</LabelFieldSet>	
+				<ImageViewer onFileSelect={onFileSelect} buttonText={"Upload Business Card"} onDeleteFile={onDeleteFile} imageSrc={imageSrc}/>
 				<Button style={{marginTop:10}} type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
 				<Button style={{marginLeft:20}} type="default" onClick={onCancel}>{cancelText}</Button>
 				{
