@@ -5,6 +5,7 @@ import {Col, Row, Popover, Button, message, Icon, Avatar} from 'antd';
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
 import {updateContactById} from '../../../store/contactsQuery';
+import isMobile from '../../../lib/agentDetect';
 
 const columns = [
 
@@ -91,7 +92,7 @@ class ContactCard extends React.Component{
 		const extra = ( 
 			<span>
 				<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/>	
-				<Popover placement="bottomRight" content={colorBox} trigger="click">
+				<Popover placement="bottomRight" content={colorBox} trigger={isMobile()?'click':'hover'}>
 	
 					<span className="color-picker-wrapper">
 						<span className="color-picker"  style={{backgroundColor:colorObj.font}}></span>
