@@ -8,7 +8,10 @@ import { propContains } from '../../../lib/littleFn';
 import {getBusinessCardRef} from '../../../store/fireConnection';
 import ContactItemForm from './ContactItemForm';
 import {createContact, updateContactById, deleteContactById} from '../../../store/contactsQuery';
+import cardColors from '../../../properties/cardColors';
 import '../../../styles/bricklayer.scss';
+
+import {getFirebase} from '../../../store/fireConnection';
 
 @connect(
 	state => ({
@@ -45,25 +48,6 @@ class ContactListContainer extends Component {
 
 		console.log('to update j', contact, orig);
 
-		let downloadURL = null;
-		if (contact.cardImage && contact.cardImageName && (orig.cardImage!=contact.cardImage)) {
-			const snap = await getBusinessCardRef().child(contact.cardImageName).put(contact.cardImage);
-			downloadURL = snap.downloadURL;
-		}
-		if (orig.downloadURL && !contact.downloadURL) {
-			// await getBusinessCardRef().child(orig.cardImage).delete().then(console.log);
-			console.log('==============','get into deleteimage');
-			contact.cardImageName = null;
-			contact.downloadURL = null;
-			
-		}
-
-		if (downloadURL) {
-			contact = { ...contact, downloadURL };
-		}
-
-		console.log('-----------------downloadURL,j', downloadURL);
-		console.log(contact, 'updated');
 		console.log(this.state.contactInEdit)
 		await updateContactById(orig._id, contact);
 		message.success('Contact Updated')
@@ -142,6 +126,9 @@ class ContactListContainer extends Component {
 		console.log('searchkey is ', searchKey);
 		return (
 			<div className="row">
+				{
+					cardColors.map(color => <span style={{padding:20, backgroundColor:color.value, color: color.font }}>Test</span>)
+				}
 				<Input
 					placeholder="input search text"
 					className="col-6 col-xs-8"

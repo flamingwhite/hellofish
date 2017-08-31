@@ -77,7 +77,7 @@ class LoginView extends Component {
 			  </div>
 			</div>
 			  <footer><a href="#"><img src="https://www.polymer-project.org/images/logos/p-logo.svg"/></a>
-				<p>You Gotta Love <a href="#" >Moira</a></p>
+					<p style={{color:'whitesmoke'}}>You Gotta Love <a href="#" >Moira</a></p>
 			  </footer>
 
 

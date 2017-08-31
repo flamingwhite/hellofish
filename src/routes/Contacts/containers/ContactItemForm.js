@@ -9,13 +9,14 @@ import simpleForm from '../../../lib/simpleForm';
 import ImageViewer from '../../../commonCmps/ImageViewer';
 import {getBusinessCardRef} from '../../../store/fireConnection';
 import createUUID from '../../../lib/uuidTool';
+import R from 'ramda';
 
 const validation = ({ name='', email='', phone='', address='' }) => {
 
 	const err = {};
 	if (name.trim().length == 0) err.name = 'Name cannot be blank';
-	if (!validator.isEmail(email)) err.email = 'Email is not valid';
-	if (!validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
+	if (!R.isEmpty(email.trim()) && !validator.isEmail(email)) err.email = 'Email is not valid';
+	if (!R.isEmpty(phone.trim()) && !validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
 	console.log('errs ', err);
 	return err;
 };
@@ -29,7 +30,7 @@ function getBase64(img, callback) {
 
 @connect()
 @simpleForm({
-	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'comments'],
+	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'comments', 'downloadURL', 'cardImageName'],
 	validate: validation
 })
 class ContactItemForm extends Component {
@@ -37,31 +38,51 @@ class ContactItemForm extends Component {
 		super(props);
 		this.submit = this.submit.bind(this);
 		this.onFileSelect = this.onFileSelect.bind(this);
-		this.state = {cardImage: null, cardImageName: null};
 		this.onDeleteFile = this.onDeleteFile.bind(this);
 
 		this.state = {
 			cardImage: null,
 			cardImageName: null,
+			imageDeleted: false,
 			imageSrc : props.initData&&props.initData.downloadURL
 		};
+		this.originalImageSrc = this.state.imageSrc;
+		this.originalImageName = props.initData && props.initData.cardImageName;
 		
 		
 	}
-	submit() {
+	async submit() {
 		const { fields, isFormValid, onOk, preSubmit } = this.props;
-		const { cardImage, cardImageName } = this.state;
+		const { cardImage, cardImageName, imageDeleted } = this.state;
+		const { originalImageName } = this;
 		preSubmit();
 		if (!isFormValid) {
 			message.error('Information is not valid');
 			return;
 		}
-		console.log('data ', {...fields, cardImage})
-		onOk({ ...fields, cardImage, cardImageName });
+
+		let toUpdate = { ...fields };
+
+		let downloadURL = null;
+
+		if (imageDeleted) {
+			toUpdate.cardImageName = null;
+			toUpdate.downloadURL = null;
+		} else if (cardImage && cardImageName && (originalImageName != cardImageName)) {
+			const snap = await getBusinessCardRef().child(cardImageName).put(cardImage);
+			downloadURL = snap.downloadURL;
+			// contact.downloadURL = downloadURL;
+			toUpdate.downloadURL = downloadURL;
+			toUpdate.cardImageName = cardImageName;
+		}
+
+
+		console.log('data ', toUpdate);
+		onOk(toUpdate);
 	}
 	onFileSelect(file) {
 		console.log('on file select', file);
-		this.setState({ cardImage: file, cardImageName: createUUID()} );
+		this.setState({ cardImage: file, cardImageName: createUUID(), imageDeleted: false} );
 
 		// getBusinessCardRef().child('abc.jpg').put(file).then(d => console.log('file upload', d))
 		getBase64(file, imageSrc => this.setState({
@@ -69,7 +90,7 @@ class ContactItemForm extends Component {
 		}));
 	}
 	onDeleteFile() {
-		this.setState({ imageSrc: null, cardImage: null, cardImageName: null });
+		this.setState({ imageSrc: null, cardImage: null, cardImageName: null, imageDeleted: true });
 
 	}
 	render() {

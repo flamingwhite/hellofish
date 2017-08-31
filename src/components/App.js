@@ -1,4 +1,5 @@
 import React from 'react'
+import 'babel-polyfill';
 import { browserHistory, Router, Route, IndexRoute } from 'react-router'
 import { Provider } from 'react-redux'
 import PropTypes from 'prop-types'

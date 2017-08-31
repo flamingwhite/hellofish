@@ -36,13 +36,12 @@ class PageLayout extends Component {
 					style={{ lineHeight: '64px' }}
 				>
 					<Menu.Item key="1"><IndexLink to="/">Home</IndexLink></Menu.Item>
-					<Menu.Item key="2"><Link to="/login">Login</Link></Menu.Item>
-					<Menu.Item key="3"><span onClick={signOut}>Sign Out</span></Menu.Item>
+					<Menu.Item key="3" className="pull-right"><span onClick={signOut}>Sign Out</span></Menu.Item>
 
 				</Menu>
 				</Header>
 				<Content style={{ padding: '0 50px' }}>
-					<div style={{ background: '#fff', padding: 18, paddingTop: 5, minHeight: 280 }}>{children}</div>
+					<div className="content-body" >{children}</div>
 				</Content>
 				<Footer style={{ textAlign: 'center' }}>
 				Designed For Moira
