@@ -93,17 +93,20 @@ class ContactCard extends React.Component{
 			<span>
 				<a onClick={() => onEditClick(info)}>Edit</a>
 				<Popover placement="bottomRight" content={colorBox} trigger="hover">
-					<Button>me</Button>
+					<span className="color-picker" >Col</span>
 			</Popover>
 			</span>
 		);
 
 
 		return (
-			<Card style={{backgroundColor:colorObj.value, margin:5}} title={nameTitle} extra={extra}  className="contact-card">
-
-			{colorBox}	
-
+			<Card style={{ backgroundColor: colorObj.value, margin: 5 }} className="contact-card" headerStyle={{ backgroundColor: 'red' }} bordered={false} >
+				<div className="card-title">
+					<div className="title-text" style={{color:colorObj.font}}>{nameTitle}</div>
+					<div className="title-extra">
+					{extra}	
+					</div>	
+				</div>
 				<Row >
 					<Col  className="card-text">
 						{
