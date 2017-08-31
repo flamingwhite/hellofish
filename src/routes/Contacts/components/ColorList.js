@@ -8,6 +8,8 @@ class ColorList extends Component {
 		}
 	}
 
+	
+
 
 
 	render() {
@@ -16,7 +18,7 @@ class ColorList extends Component {
 		const isColorActive = color => color.id == activeColorId || color.id == hoverColorId;
 
 		const renderColor = color => (
-			<span style={isColorActive(color) ? { border: '2px solid '+ color.value } : {}} className="color-box-wrapper" onClick={() => onColorSelect(color)} onMouseOver={() => this.setState({ hoverColorId: color.id })} onMouseOut={() => this.setState({hoverColorId: null})}>
+			<span style={isColorActive(color) ? { border: '2px solid '+ color.value } : {}} className="color-box-wrapper" onClick={() => onColorSelect(color)} onMouseEnter={() => this.setState({ hoverColorId: color.id })} onMouseLeave={() => this.setState({hoverColorId: null})}>
 				<span className="color-box" style={{backgroundColor: color.value, border:'1px solid '+color.borderColor||color.color}}></span>
 			</span>
 		)

@@ -126,15 +126,14 @@ class ContactListContainer extends Component {
 		console.log('searchkey is ', searchKey);
 		return (
 			<div className="row">
-				{
-					cardColors.map(color => <span style={{padding:20, backgroundColor:color.value, color: color.font }}>Test</span>)
-				}
+				
 				<Input
 					placeholder="input search text"
 					className="col-6 col-xs-8"
 					onChange={onSearchChange}
 				/>
 				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
+				<p/>
 				<ContactList search={searchKey} contacts={contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address','comments']) )} onEditClick={openContactDialog} />
 
 				{
@@ -154,6 +153,7 @@ class ContactListContainer extends Component {
 						footer={null}
 						onCancel={onModalCancel}
 					>
+						
 						<ContactItemForm onOk={createContact} onCancel={onModalCancel} okText="Create" />
 					</Modal>	
 				}

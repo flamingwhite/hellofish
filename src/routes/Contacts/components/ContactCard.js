@@ -1,7 +1,7 @@
 import React from 'react';
 import {Card} from 'antd';
 import SearchHighlight from '../../../commonCmps/SearchHighlight';
-import {Col, Row, Popover, Button, message} from 'antd';
+import {Col, Row, Popover, Button, message, Icon, Avatar} from 'antd';
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
 import {updateContactById} from '../../../store/contactsQuery';
@@ -60,11 +60,10 @@ class ContactCard extends React.Component{
 			message.success('Color Updated');
 		})
 
-
 	}
 	render() {
 		const { info, search, onEditClick } = this.props;
-		const { setContactColor } = this;
+		const { setContactColor, setHovering } = this;
 		// const { name, age, email, phone, search} = props;
 		const { name, color='white', ...rest } = info;
 		const colorObj = colors.find(c => c.id == color);
@@ -84,16 +83,19 @@ class ContactCard extends React.Component{
 		);
 
 		const colorBox = (
-			<div style={{ width: 250 }}>
+			<div style={{ width: 200 }}>
 				<ColorList activeColorId={info.color} onColorSelect={c=>setContactColor(c.id)} colors={colors} />
 			</div>
 		)
 
 		const extra = ( 
 			<span>
-				<a onClick={() => onEditClick(info)}>Edit</a>
-				<Popover placement="bottomRight" content={colorBox} trigger="hover">
-					<span className="color-picker" >Col</span>
+				<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/>	
+				<Popover placement="bottomRight" content={colorBox} trigger="click">
+	
+					<span className="color-picker-wrapper">
+						<span className="color-picker"  style={{backgroundColor:colorObj.font}}></span>
+					</span>
 			</Popover>
 			</span>
 		);
@@ -107,7 +109,7 @@ class ContactCard extends React.Component{
 					{extra}	
 					</div>	
 				</div>
-				<Row >
+				<Row>
 					<Col  className="card-text">
 						{
 							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key]))

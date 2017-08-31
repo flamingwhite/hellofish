@@ -31,13 +31,20 @@ const columns = [{
 }];
 
 export default class ContactList extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			hoverCard: null
+		}
+	}
 	render() {
 		const { contacts, ...rest} = this.props;
+		const { hoverCard } = this.state;
 		return (
 
 			<Masonry style={{width: '100%'}} gutter={15} ref={c => this.list = c}>
 				{
-					contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6} xl={4}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
+					contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={8} lg={6} xl={4}> <ContactCard  {...rest} info={ct} key={ct.id} /> </Col>)
 				}
 
 		</Masonry>
@@ -45,27 +52,3 @@ export default class ContactList extends React.Component {
 
 	}
 }
-
-	// render() {
-	// 	const { contacts, ...rest} = this.props;
-	// 	return (
-	// 		<Row className="bricklayer" gutter={15} ref={c => this.list = c}>
-	// 			{
-	// 				contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
-	// 			}
-	// 		</Row>	
-	// 	)
-
-	// }
-// const ContactList = props => {
-// 	const { contacts, ...rest} = props;
-// 	return (
-// 		<Row class="bricklayer" gutter={15} ref="contactList">
-// 			{
-// 				contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={6}> <ContactCard {...rest} info={ct} key={ct.id} /> </Col>)
-// 			}
-// 		</Row>	
-// 	)
-// }
-
-// export default ContactList;
