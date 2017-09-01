@@ -2,7 +2,7 @@ import {
 	connect
 } from 'react-redux';
 import React, {Component} from 'react';
-import {Button, message, Popconfirm, Popover} from 'antd';
+import {Button, message, Popconfirm, Spin} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
 import validator from 'validator';
 import simpleForm from '../../../lib/simpleForm';
@@ -44,6 +44,7 @@ class ContactItemForm extends Component {
 			cardImage: null,
 			cardImageName: null,
 			imageDeleted: false,
+			uploadLoading: false,
 			imageSrc : props.initData&&props.initData.downloadURL
 		};
 		this.originalImageSrc = this.state.imageSrc;
@@ -65,6 +66,8 @@ class ContactItemForm extends Component {
 
 		let downloadURL = null;
 
+		this.setState({ uploadLoading: true });
+
 		if (imageDeleted) {
 			toUpdate.cardImageName = null;
 			toUpdate.downloadURL = null;
@@ -76,6 +79,7 @@ class ContactItemForm extends Component {
 			toUpdate.cardImageName = cardImageName;
 		}
 
+		this.setState({ uploadLoading: false });
 
 		console.log('data ', toUpdate);
 		onOk(toUpdate);
@@ -97,10 +101,12 @@ class ContactItemForm extends Component {
 		console.log('fields', this.props);
 
 		const { submit, onFileSelect, onDeleteFile } = this;
-		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete } = this.props;
-		const { cardImage, imageSrc } = this.state;
+		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete, loading = false, loadingText = 'Loading' } = this.props;
+		const { cardImage, imageSrc, uploadLoading } = this.state;
 
 		return (
+
+			<Spin tip={loadingText} spinning={uploadLoading||loading}>
 			<div>
 				<LabelFieldSet label="Name" err={(hasSubmitted||name.touched)&&name.error}>
 					<input className="form-control" {...name}/>
@@ -140,6 +146,7 @@ class ContactItemForm extends Component {
 				}
 
 			</div>
+		</Spin>
 		)
 
 	}

@@ -92,6 +92,9 @@ body {
 
 
 //color box
+
+.color-list-container {
+}
 .color-box-wrapper {
 	display: inline-block;
 	padding: 3px;
@@ -131,8 +134,7 @@ body {
 .color-picker-wrapper {
 	display: inline-block;
 	border-radius: 15px;
-
-	margin-left:5px;
+	margin-left:8px;
 
 
 }
@@ -142,4 +144,24 @@ body {
 	width: 15px;
 	background-color: orange;
 	border-radius: 15px;
+}
+
+.clear-icon {
+	font-size: 18px;
+	margin-top:10px;
+	margin-left:10px;
+	cursor: pointer;
+}
+
+.email-textarea-div {
+	clear: both;
+	width: 100%;
+
+}
+
+.email-icon {
+	font-size:25px;
+	margin-top:8px;
+	margin-left: 10px;
+
 }

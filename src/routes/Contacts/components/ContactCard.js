@@ -91,8 +91,8 @@ class ContactCard extends React.Component{
 
 		const extra = ( 
 			<span>
-				<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/>	
-				<Popover placement="bottomRight" content={colorBox} trigger={isMobile()?'click':'hover'}>
+				{/*<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/> */}
+				<Popover placement="bottomRight" content={colorBox} trigger={'click'}>
 	
 					<span className="color-picker-wrapper">
 						<span className="color-picker"  style={{backgroundColor:colorObj.font}}></span>
@@ -110,7 +110,7 @@ class ContactCard extends React.Component{
 					{extra}	
 					</div>	
 				</div>
-				<Row>
+				<Row onClick={() => onEditClick(info)}>
 					<Col  className="card-text">
 						{
 							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key]))
