@@ -1,6 +1,8 @@
 yarn build
 cd dist
 
+echo 'whitemiao.us' >> CNAME
+
 git init
 git add .
 git commit -m "first commit"

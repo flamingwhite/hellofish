@@ -3,7 +3,7 @@ import {
 } from 'react-redux';
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
-import {Input, Modal, Button, message, Icon, Spin} from 'antd';
+import {Input, Modal, Button, message, Icon, Tooltip} from 'antd';
 import { propContains } from '../../../lib/littleFn';
 import {getBusinessCardRef} from '../../../store/fireConnection';
 import ContactItemForm from './ContactItemForm';
@@ -16,7 +16,8 @@ import R from 'ramda';
 
 @connect(
 	state => ({
-		contacts: state.contactChunk.contacts
+		contacts: state.contactChunk.contacts,
+		touchOnly: state.env.touchOnly
 	})
 )
 class ContactListContainer extends Component {
@@ -28,6 +29,7 @@ class ContactListContainer extends Component {
 			contactInEdit: null,
 			inNewMode: false,
 			showEmailTextArea: false,
+			showOnlyDeleted: false,
 			modalLoading: false,
 			activeColorIds: []
 		};
@@ -39,6 +41,10 @@ class ContactListContainer extends Component {
 		this.createContact = this.createContact.bind(this);
 		this.deleteContact = this.deleteContact.bind(this);
 		this.toggleColor = this.toggleColor.bind(this);
+		this.revertContact = this.revertContact.bind(this);
+		this.completelyDeleteContact = this.completelyDeleteContact.bind(this);
+		
+		
 		
 
 	}
@@ -110,12 +116,44 @@ class ContactListContainer extends Component {
 		});
 
 	}
+
 	
-	deleteContact() {
-		const { _id, name } = this.state.contactInEdit;
+	completelyDeleteContact(_id) {
 		deleteContactById(_id)
 			.then(() => {
 				message.success('Contact ' + name + ' removed');
+				this.setState({
+					contactInEdit: null
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				message.error('Error!');
+			})
+
+	}
+	
+	deleteContact() {
+		const { _id, name } = this.state.contactInEdit;
+		updateContactById(_id, {deleted: true})
+		// deleteContactById(_id)
+			.then(() => {
+				message.success('Contact ' + name + ' removed');
+				this.setState({
+					contactInEdit: null
+				});
+			})
+			.catch(err => {
+				console.error(err);
+				message.error('Error!');
+			})
+
+	}
+
+	revertContact(_id) {
+		updateContactById(_id, {deleted: false})
+			.then(() => {
+				message.success('Contact ' + name + ' restored');
 				this.setState({
 					contactInEdit: null
 				});
@@ -142,11 +180,11 @@ class ContactListContainer extends Component {
 	}
 
 	render() {
-		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor } = this;
-		const { contacts } = this.props;
-		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading } = this.state;
+		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact } = this;
+		const { contacts, touchOnly } = this.props;
+		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted } = this.state;
 
-		const visibleContacts = contacts.filter(propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website']))
+		const visibleContacts = contacts.filter(c => (showOnlyDeleted&&c.deleted)||(!showOnlyDeleted&&!c.deleted) ).filter(propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website']))
 			.filter(c => R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'));
 		
 		const visibleContactsEmails = visibleContacts.filter(c => c.email).map(c => c.email).join('; ');
@@ -165,30 +203,38 @@ class ContactListContainer extends Component {
 				<p/>
 
 				<div>
-					<ColorList colors={cardColors} onColorSelect={toggleColor} activeColorIds={activeColorIds} />
+					<ColorList touchOnly={touchOnly} colors={cardColors} onColorSelect={toggleColor} activeColorIds={activeColorIds} />
 					{
 						!R.isEmpty(activeColorIds) &&
-						<Icon class="clear-icon" size="large" type="close" onClick={()=>this.setState({activeColorIds:[]})}/>
+						<Icon class="email-icon" size="large" type="close" onClick={()=>this.setState({activeColorIds:[]})}/>
 					}
 				</div>	
 				{
-					!showEmailTextArea &&
-					<Icon onClick={()=>this.setState({showEmailTextArea:true})} type="mail" className="email-icon"/>
-				}
-				{
-					showEmailTextArea &&
-					<Icon onClick={()=>this.setState({showEmailTextArea:false})} type="close-circle-o" className="email-icon"/>
-				}
+					showEmailTextArea ?
+					<Tooltip title="Hide Emails">					
+						<Icon onClick={()=>this.setState({showEmailTextArea:false})} type="close-circle-o" className="email-icon"/>
+					</Tooltip>
+					: <Tooltip title="Get Emails">
+						<Icon onClick={() => this.setState({ showEmailTextArea: true })} type="mail" className="email-icon" />
+					</Tooltip>
 
-				{
-					showEmailTextArea &&
-					<div className="email-textarea-div">
-						<Input.TextArea  value={visibleContactsEmails} />
-					</div>
 				}
 				
-
-				<ContactList search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} />
+				{
+					showOnlyDeleted ?
+					<Tooltip title="Show Active Contacts">					
+						<Icon type="desktop" className="email-icon" onClick={()=>this.setState({showOnlyDeleted: false})}/>
+					</Tooltip>
+					: <Tooltip title="Show Deleted Contacts">
+						<Icon type="delete" className="email-icon" onClick={()=>this.setState({showOnlyDeleted: true})}/>	
+					</Tooltip>
+				}
+				{
+					showEmailTextArea &&
+					<textarea style={{width: '100%'}} value={visibleContactsEmails} />
+				}
+				
+				<ContactList touchOnly={touchOnly} search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} onRevertContact={revertContact} completelyDeleteContact={completelyDeleteContact}/>
 
 				{
 					contactInEdit &&

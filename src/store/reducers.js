@@ -2,12 +2,14 @@ import { combineReducers } from 'redux'
 import locationReducer from './location';
 import contactsReducer from '../routes/Contacts/contactsReducer';
 import authReducer from './authReducer';
+import envReducer from './envReducer';
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
 	location: locationReducer,
 	contactChunk: contactsReducer,
 	auth: authReducer,
+	env: envReducer,
     ...asyncReducers
   })
 }

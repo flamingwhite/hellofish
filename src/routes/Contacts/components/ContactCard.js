@@ -1,11 +1,10 @@
 import React from 'react';
 import {Card} from 'antd';
 import SearchHighlight from '../../../commonCmps/SearchHighlight';
-import {Col, Row, Popover, Button, message, Icon, Avatar} from 'antd';
+import {Col, Row, Popover, Button, message, Icon, Avatar, Popconfirm, Tooltip} from 'antd';
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
 import {updateContactById} from '../../../store/contactsQuery';
-import isMobile from '../../../lib/agentDetect';
 
 const columns = [
 
@@ -51,7 +50,6 @@ class ContactCard extends React.Component{
 		super(props);
 		this.setContactColor = this.setContactColor.bind(this);
 		
-		
 	}
 
 	setContactColor(colorId) {
@@ -63,10 +61,10 @@ class ContactCard extends React.Component{
 
 	}
 	render() {
-		const { info, search, onEditClick } = this.props;
+		const { info, search, onEditClick, touchOnly, onRevertContact, completelyDeleteContact } = this.props;
 		const { setContactColor, setHovering } = this;
 		// const { name, age, email, phone, search} = props;
-		const { name, color='white', ...rest } = info;
+		const {_id, name, color='white', deleted=false, ...rest } = info;
 		const colorObj = colors.find(c => c.id == color);
 
 		console.log('info and color', info, color, colors);
@@ -89,10 +87,19 @@ class ContactCard extends React.Component{
 			</div>
 		)
 
-		const extra = ( 
+
+
+		const extra = deleted ? [
+			<Icon style={{marginRight:12}} type="rollback" onClick={()=>onRevertContact(_id)}/>,	
+			<Popconfirm title="Are you sure to permanently delete this contact?" onConfirm={()=>completelyDeleteContact(_id)} onCancel={() => { }} okText="Yes" cancelText="No">
+				<Tooltip title="Permanently Delete">
+					<Icon type="close"/>
+				</Tooltip>
+			</Popconfirm>
+		] :( 
 			<span>
 				{/*<Icon style={{color: colorObj.font}} type="edit" onClick={() => onEditClick(info)}/> */}
-				<Popover placement="bottomRight" content={colorBox} trigger={'click'}>
+				<Popover placement="bottomRight" content={colorBox} trigger={touchOnly?'click': 'hover'}>
 	
 					<span className="color-picker-wrapper">
 						<span className="color-picker"  style={{backgroundColor:colorObj.font}}></span>

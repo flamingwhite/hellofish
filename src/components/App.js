@@ -8,11 +8,36 @@ import LoginView from '../routes/Login/LoginView';
 import ContactsView from '../routes/Contacts/ContactsView';
 import EnsureLoginContainer from '../routes/EnsureLoginContainer/EnsureLoginContainer';
 import PageLayout from '../layouts/PageLayout';
+import $ from 'jquery';
+import {actions} from '../store/envReducer';
 
 class App extends React.Component {
   static propTypes = {
     store: PropTypes.object.isRequired,
   }
+
+  componentDidMount() {
+	  const {store} = this.props;
+	  console.log('app has mounted', $, $('body'));
+		var $body = $('body');
+		var detectMouse = function(e){
+
+			let touchOnly = true;
+
+			if (e.type === 'mousedown') {
+				touchOnly = false;
+			}
+			else if (e.type === 'touchstart') {
+				touchOnly = true;
+			}
+			// remove event bindings, so it only runs once
+			store.dispatch(actions.setTouchOnly(touchOnly));
+			$body.off('mousedown touchstart', detectMouse);
+		}
+		// attach both events to body
+		$body.on('mousedown touchstart', detectMouse);
+	
+	}
 
   shouldComponentUpdate () {
     return false
