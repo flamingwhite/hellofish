@@ -4,14 +4,13 @@ import {
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
 import {Input, Modal, Button, message, Icon, Tooltip} from 'antd';
-import { propContains } from '../../../lib/littleFn';
+import { propContains, toggleArrayItem } from '../../../lib/littleFn';
 import {getBusinessCardRef} from '../../../store/fireConnection';
 import ContactItemForm from './ContactItemForm';
 import {createContact, updateContactById, deleteContactById} from '../../../store/contactsQuery';
 import cardColors from '../../../properties/cardColors';
 import '../../../styles/bricklayer.scss';
 import ColorList from '../components/ColorList';
-import {getFirebase} from '../../../store/fireConnection';
 import R from 'ramda';
 
 @connect(
@@ -29,39 +28,21 @@ class ContactListContainer extends Component {
 			contactInEdit: null,
 			inNewMode: false,
 			showEmailTextArea: false,
+			showPhoneTextArea: false,
 			showOnlyDeleted: false,
 			modalLoading: false,
 			activeColorIds: []
 		};
-		this.onSearchChange = this.onSearchChange.bind(this);
-		this.updateContact = this.updateContact.bind(this);
-		this.openContactDialog = this.openContactDialog.bind(this);
-		this.onModalCancel = this.onModalCancel.bind(this);
-		this.newContactClick = this.newContactClick.bind(this);
-		this.createContact = this.createContact.bind(this);
-		this.deleteContact = this.deleteContact.bind(this);
-		this.toggleColor = this.toggleColor.bind(this);
-		this.revertContact = this.revertContact.bind(this);
-		this.completelyDeleteContact = this.completelyDeleteContact.bind(this);
-		
-		
-		
 
 	}
 
-	onSearchChange(evt) {
-		this.setState({
-			searchKey: evt.target.value
-		});
-	}
+	onSearchChange = evt => this.setState({
+		searchKey: evt.target.value
+	});
 
-	async updateContact(contact) {
+	updateContact = async contact => {
 		this.setState({ modalLoading: true });
 		const orig = this.state.contactInEdit;
-
-		console.log('to update j', contact, orig);
-
-		console.log(this.state.contactInEdit)
 		await updateContactById(orig._id, contact);
 		message.success('Contact Updated')
 
@@ -72,29 +53,22 @@ class ContactListContainer extends Component {
 		})
 	}
 
-	openContactDialog(ct) {
-		this.setState({
-			contactInEdit: ct,
-			inNewMode: false
-		});
-	}
+	openContactDialog = ct => this.setState({
+		contactInEdit: ct,
+		inNewMode: false
+	})
 
-	onModalCancel() {
-		this.setState({
-			contactInEdit: null,
-			inNewMode: false
-		});
-	}
+	onModalCancel = () => this.setState({
+		contactInEdit: null,
+		inNewMode: false
+	})
 
-	newContactClick() {
-		this.setState({
-			contactInEdit: null,
-			inNewMode: true
-		})
-	}
+	newContactClick = () => this.setState({
+		contactInEdit: null,
+		inNewMode: true
+	})
 
-
-	async createContact(contact) {
+	createContact = async contact => {
 		this.setState({modalLoading: true});
 		let downloadURL = null;
 		if (contact.cardImage && contact.cardImageName) {
@@ -117,105 +91,72 @@ class ContactListContainer extends Component {
 
 	}
 
-	
-	completelyDeleteContact(_id) {
-		deleteContactById(_id)
-			.then(() => {
-				message.success('Contact ' + name + ' removed');
-				this.setState({
-					contactInEdit: null
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				message.error('Error!');
-			})
-
+	completeEdit = (promise, successMsg) => {
+		return promise.then(() => {
+			message.success(successMsg);
+			this.setState({
+				contactInEdit: null
+			});
+		})
+		.catch(err => {
+			console.error(err);
+			message.error(err);
+		})
 	}
+
+	completelyDeleteContact = _id => this.completeEdit(deleteContactById(_id), `Contact ${name} Deleted Permanently`);
 	
-	deleteContact() {
+	deleteContact = () => {
 		const { _id, name } = this.state.contactInEdit;
-		updateContactById(_id, {deleted: true})
-		// deleteContactById(_id)
-			.then(() => {
-				message.success('Contact ' + name + ' removed');
-				this.setState({
-					contactInEdit: null
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				message.error('Error!');
-			})
-
+		this.completeEdit(updateContactById(_id, { deleted: true }), `Contact ${name} Moved to Trash`);
 	}
 
-	revertContact(_id) {
-		updateContactById(_id, {deleted: false})
-			.then(() => {
-				message.success('Contact ' + name + ' restored');
-				this.setState({
-					contactInEdit: null
-				});
-			})
-			.catch(err => {
-				console.error(err);
-				message.error('Error!');
-			})
+	revertContact = _id => this.completeEdit( updateContactById(_id, {deleted: false}) , `Contact ${name} Restored`);
 
-	}
 
-	toggleColor(color) {
+	toggleColor = color => {
 		const colorId = color.id;
 		const { activeColorIds } = this.state;
-		if (!activeColorIds.includes(colorId)) {
-			this.setState({
-				activeColorIds: [...activeColorIds, colorId]
-			})
-		} else {
-			this.setState({
-				activeColorIds: activeColorIds.filter(c => c != colorId)
-			});
-		}
+		this.setState({
+			activeColorIds: toggleArrayItem(activeColorIds, colorId)
+		});
 	}
 
 	render() {
 		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact } = this;
 		const { contacts, touchOnly } = this.props;
-		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted } = this.state;
+		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted, showPhoneTextArea } = this.state;
 
-		const visibleContacts = contacts.filter(c => (showOnlyDeleted&&c.deleted)||(!showOnlyDeleted&&!c.deleted) ).filter(propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website']))
-			.filter(c => R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'));
+		// const visibleContacts = contacts.filter(c => (showOnlyDeleted&&c.deleted)||(!showOnlyDeleted&&!c.deleted) ).filter(propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website']))
+		// 	.filter(c => R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'));
+
+		const visibleContacts = contacts.filter(c => (!showOnlyDeleted == !c.deleted)
+			&& propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website'])(c)
+			&& (R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white') )
+		);
 		
-		const visibleContactsEmails = visibleContacts.filter(c => c.email).map(c => c.email).join('; ');
-
 
 		console.log('searchkey is ', searchKey);
 		return (
 			<div className="row">
-				
-				<Input
-					placeholder="input search text"
-					className="col-6 col-xs-8"
-					onChange={onSearchChange}
-				/>
-				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
-				<p/>
-
-				<div>
-					<ColorList touchOnly={touchOnly} colors={cardColors} onColorSelect={toggleColor} activeColorIds={activeColorIds} />
-					{
-						!R.isEmpty(activeColorIds) &&
-						<Icon class="email-icon" size="large" type="close" onClick={()=>this.setState({activeColorIds:[]})}/>
-					}
-				</div>	
 				{
 					showEmailTextArea ?
 					<Tooltip title="Hide Emails">					
-						<Icon onClick={()=>this.setState({showEmailTextArea:false})} type="close-circle-o" className="email-icon"/>
+						<Icon onClick={()=>this.setState({showEmailTextArea:false})} type="close-circle-o" className="fn-icon"/>
 					</Tooltip>
 					: <Tooltip title="Get Emails">
-						<Icon onClick={() => this.setState({ showEmailTextArea: true })} type="mail" className="email-icon" />
+						<Icon onClick={() => this.setState({ showEmailTextArea: true })} type="mail" className="fn-icon" />
+					</Tooltip>
+
+				}
+
+				{
+					showPhoneTextArea ?
+					<Tooltip title="Hide Phones">					
+						<Icon onClick={()=>this.setState({showPhoneTextArea:false})} type="close-circle-o" className="fn-icon"/>
+					</Tooltip>
+					: <Tooltip title="Get Phones">
+						<Icon onClick={() => this.setState({ showPhoneTextArea: true })} type="phone" className="fn-icon" />
 					</Tooltip>
 
 				}
@@ -223,15 +164,39 @@ class ContactListContainer extends Component {
 				{
 					showOnlyDeleted ?
 					<Tooltip title="Show Active Contacts">					
-						<Icon type="desktop" className="email-icon" onClick={()=>this.setState({showOnlyDeleted: false})}/>
+						<Icon type="desktop" className="fn-icon" onClick={()=>this.setState({showOnlyDeleted: false})}/>
 					</Tooltip>
 					: <Tooltip title="Show Deleted Contacts">
-						<Icon type="delete" className="email-icon" onClick={()=>this.setState({showOnlyDeleted: true})}/>	
+						<Icon type="delete" className="fn-icon" onClick={()=>this.setState({showOnlyDeleted: true})}/>	
 					</Tooltip>
+				}
+				<Input
+					placeholder="input search text"
+					className="col-4 col-xs-6"
+					onChange={onSearchChange}
+					style={{marginLeft:10}}
+				/>
+				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
+				<p/>
+
+				<div>
+					<ColorList touchOnly={touchOnly} colors={cardColors} onColorSelect={toggleColor} activeColorIds={activeColorIds} />
+				</div>	
+				{
+					!R.isEmpty(activeColorIds) &&
+					<Icon className="fn-icon" type="close" onClick={()=>this.setState({activeColorIds:[]})}/>
 				}
 				{
 					showEmailTextArea &&
-					<textarea style={{width: '100%'}} value={visibleContactsEmails} />
+					<textarea style={{ width: '100%' }} value={
+						visibleContacts.filter(c=>c.email).map(c=>c.email).join('; ')
+					} />
+				}
+				{
+					showPhoneTextArea &&
+					<textarea style={{ width: '100%' }} value={
+						visibleContacts.filter(c => c.phone).map(c=>c.phone).join('; ')
+					} />
 				}
 				
 				<ContactList touchOnly={touchOnly} search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} onRevertContact={revertContact} completelyDeleteContact={completelyDeleteContact}/>

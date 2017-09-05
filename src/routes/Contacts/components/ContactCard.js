@@ -117,7 +117,7 @@ class ContactCard extends React.Component{
 					{extra}	
 					</div>	
 				</div>
-				<Row onClick={() => onEditClick(info)}>
+				<Row style={{minHeight:30}} onClick={() => onEditClick(info)}>
 					<Col  className="card-text">
 						{
 							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key]))
