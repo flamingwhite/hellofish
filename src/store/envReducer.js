@@ -1,5 +1,5 @@
 const initialState = {
-	touchOnly: true
+	touchOnly: false
 };
 
 

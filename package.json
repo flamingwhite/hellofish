@@ -27,6 +27,8 @@
     "compression": "^1.6.2",
     "express": "^4.14.0",
     "firebase": "^4.3.0",
+    "firebase-admin": "^5.2.1",
+    "firebase-functions": "^0.6.3",
     "jquery": "^3.2.1",
     "object-assign": "^4.1.1",
     "promise": "^7.1.1",

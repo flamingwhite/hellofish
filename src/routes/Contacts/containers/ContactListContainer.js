@@ -69,6 +69,7 @@ class ContactListContainer extends Component {
 	})
 
 	createContact = async contact => {
+		const { activeColorIds } = this.state;
 		this.setState({modalLoading: true});
 		let downloadURL = null;
 		if (contact.cardImage && contact.cardImageName) {
@@ -81,6 +82,11 @@ class ContactListContainer extends Component {
 		}
 
 		console.log(contact);
+		
+		if (activeColorIds.length == 1) { 
+			contact.color = activeColorIds[0];
+		}
+
 		await createContact(contact);
 		message.success('Contact Created');
 		
@@ -136,7 +142,6 @@ class ContactListContainer extends Component {
 		);
 		
 
-		console.log('searchkey is ', searchKey);
 		return (
 			<div className="row">
 				{

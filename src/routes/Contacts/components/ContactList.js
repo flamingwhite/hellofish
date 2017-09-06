@@ -42,9 +42,9 @@ export default class ContactList extends React.Component {
 		const { hoverCard } = this.state;
 		return (
 
-			<Masonry style={{width: '100%'}} gutter={15} ref={c => this.list = c}>
+			<Masonry style={{width: '100%'}} >
 				{
-					contacts.map(ct => <Col key={ct.id} xs={24} sm={12} md={8} lg={6} xl={4}> <ContactCard  {...rest} info={ct} key={ct.id} /> </Col>)
+					contacts.map(ct => <Col key={ct._id} xs={24} sm={12} md={8} lg={6} xl={4}> <ContactCard  {...rest} info={ct}/> </Col>)
 				}
 
 		</Masonry>

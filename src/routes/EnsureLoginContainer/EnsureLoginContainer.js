@@ -4,25 +4,29 @@ import {browserHistory} from 'react-router';
 
 @connect(
 	state => ({
-		isLoggedIn: state.auth.loggedIn
+		isLoggedIn: state.auth.loggedIn,
+		checkingAuth: state.auth.checkingAuth
 	})
 )
 class EnsureLoggedInContainer extends Component {
-	componentDidMount() {
-	  const { dispatch, currentURL, isLoggedIn } = this.props
+	// componentDidMount() {
+	//   const { dispatch, currentURL, isLoggedIn, checkingAuth } = this.props
   
-	  if (!isLoggedIn) {
-		// set the current url/path for future redirection (we use a Redux action)
-		// then redirect (we use a React Router method)
-		// dispatch(setRedirectUrl(currentURL))
+	//   if (!isLoggedIn) {
+	// 	// set the current url/path for future redirection (we use a Redux action)
+	// 	// then redirect (we use a React Router method)
+	// 	// dispatch(setRedirectUrl(currentURL))
 		
-		console.log('ensure logged in detected not');  
-		browserHistory.replace("/login")
-	  }
-	}
+	// 	console.log('ensure logged in detected not');  
+	// 	browserHistory.replace("/login")
+	//   }
+	// }
   
 	render() {
-		const { isLoggedIn, children } = this.props;
+		const { isLoggedIn, checkingAuth, children } = this.props;
+		if (checkingAuth) {
+			return <span>Checking Login Status</span>;
+		}
 	  if (isLoggedIn) {
 		  return children;
 	  } else {

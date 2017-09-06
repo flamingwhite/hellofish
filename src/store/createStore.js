@@ -1,57 +1,96 @@
-import { applyMiddleware, compose, createStore as createReduxStore } from 'redux'
+import {
+	applyMiddleware,
+	compose,
+	createStore as createReduxStore
+} from 'redux'
 import thunk from 'redux-thunk'
-import { browserHistory } from 'react-router'
+import {
+	browserHistory
+} from 'react-router'
 import makeRootReducer from './reducers'
-import { updateLocation } from './location';
-import {contactsList} from './contactsQuery';
-import {getFirebase} from './fireConnection';
-import {actions as authActions} from './authReducer';
+import {
+	updateLocation
+} from './location';
+import {
+	contactsList
+} from './contactsQuery';
+import {
+	getFirebase
+} from './fireConnection';
+import {
+	actions as authActions
+} from './authReducer';
 
 const createStore = (initialState = {}) => {
-  // ======================================================
-  // Middleware Configuration
-  // ======================================================
-  const middleware = [thunk]
+	// ======================================================
+	// Middleware Configuration
+	// ======================================================
+	const middleware = [thunk]
 
-  // ======================================================
-  // Store Enhancers
-  // ======================================================
-  const enhancers = []
-  let composeEnhancers = compose
+	// ======================================================
+	// Store Enhancers
+	// ======================================================
+	const enhancers = []
+	let composeEnhancers = compose
 
-  if (__DEV__) {
-    if (typeof window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ === 'function') {
-      composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
-    }
-  }
+	if (__DEV__) {
+		if (typeof window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ === 'function') {
+			composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+		}
+	}
 
-  // ======================================================
-  // Store Instantiation and HMR Setup
-  // ======================================================
-  const store = createReduxStore(
-    makeRootReducer(),
-    initialState,
-    composeEnhancers(
-      applyMiddleware(...middleware),
-      ...enhancers
-    )
-  )
-  store.asyncReducers = {}
+	// ======================================================
+	// Store Instantiation and HMR Setup
+	// ======================================================
+	const store = createReduxStore(
+		makeRootReducer(),
+		initialState,
+		composeEnhancers(
+			applyMiddleware(...middleware),
+			...enhancers
+		)
+	)
+	store.asyncReducers = {}
 
-  // To unsubscribe, invoke `store.unsubscribeHistory()` anytime
-  store.unsubscribeHistory = browserHistory.listen(updateLocation(store));
+	// To unsubscribe, invoke `store.unsubscribeHistory()` anytime
+	store.unsubscribeHistory = browserHistory.listen(updateLocation(store));
 
-  //hook firebase contact list with redux
-//   contactsList().subscribe(list => store.dispatch({ type: 'FETCH_CONTACT', payload: list }));
+	//hook firebase contact list with redux
+	//   contactsList().subscribe(list => store.dispatch({ type: 'FETCH_CONTACT', payload: list }));
 
-  const contactListSub = contactsList();	
+	const contactListSub = contactsList();
 
-//listen to user login info
+	const checkUserLoginStatus = new Promise((resolve, reject) => {
+
+		getFirebase().auth().onAuthStateChanged(user => {
+			if (user) {
+				console.log('user logged in', user);
+				store.dispatch(authActions.userLogin(user))
+				contactListSub.subscribe(list => store.dispatch({
+					type: 'FETCH_CONTACT',
+					payload: list
+				}));
+				resolve(user);
+			} else {
+				console.log('user logged out', user);
+				store.dispatch(authActions.userLogout());
+				reject(Error('it fails'));
+			}
+
+		})
+
+	});
+
+
+	//listen to user login info
 	getFirebase().auth().onAuthStateChanged(user => {
 		if (user) {
 			console.log('user logged in', user);
 			store.dispatch(authActions.userLogin(user))
-			contactListSub.subscribe(list => store.dispatch({ type: 'FETCH_CONTACT', payload: list }));
+			contactListSub.subscribe(list => store.dispatch({
+				type: 'FETCH_CONTACT',
+				payload: list
+			}));
 		} else {
 			console.log('user logged out', user);
 			store.dispatch(authActions.userLogout());
@@ -62,14 +101,14 @@ const createStore = (initialState = {}) => {
 
 
 
-  if (module.hot) {
-    module.hot.accept('./reducers', () => {
-      const reducers = require('./reducers').default
-      store.replaceReducer(reducers(store.asyncReducers))
-    })
-  }
+	if (module.hot) {
+		module.hot.accept('./reducers', () => {
+			const reducers = require('./reducers').default
+			store.replaceReducer(reducers(store.asyncReducers))
+		})
+	}
 
-  return store
+	return store
 }
 
 export default createStore

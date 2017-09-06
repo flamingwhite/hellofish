@@ -9,7 +9,8 @@ import './LoginView.scss';
 @connect(
 	state => ({
 		isLoggedIn: state.auth.loggedIn,
-		user: state.auth.user
+		user: state.auth.user,
+		checkingAuth: state.auth.checkingAuth
 	})
 )
 class LoginView extends Component {
@@ -23,14 +24,6 @@ class LoginView extends Component {
 		this.handleLogin = this.handleLogin.bind(this);
 		this.handleInputChange = this.handleInputChange.bind(this);
 		
-	}
-	componentWillMount() {
-		console.log('hello props login', this.props);
-		if (this.props.isLoggedIn) {
-			console.log('you already logged in');
-			browserHistory.push('/')
-		}
-
 	}
 
 	handleLogin(e) {
@@ -53,10 +46,16 @@ class LoginView extends Component {
 	}
 
 	render() {
+		const { checkingAuth, isLoggedIn } = this.props;
 		const { handleLogin, handleInputChange } = this;
 		console.log('username, pass', this.state);
 		const { username, password } = this.state;
-		if (this.props.isLoggedIn) {
+
+		if (checkingAuth) {
+			return <h3> Checking Login Status </h3>
+		}
+
+		if (isLoggedIn) {
 			console.log(' render you already logged in');
 			browserHistory.push('/')
 			return null;

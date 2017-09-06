@@ -4,6 +4,7 @@ import {
 import React, {Component} from 'react';
 import {Button, message, Popconfirm, Spin} from 'antd';
 import LabelFieldSet from '../../../commonCmps/LabelFieldSet';
+import PhoneInput from '../../../commonCmps/PhoneInput';
 import validator from 'validator';
 import simpleForm from '../../../lib/simpleForm';
 import ImageViewer from '../../../commonCmps/ImageViewer';
@@ -107,7 +108,7 @@ class ContactItemForm extends Component {
 		return (
 
 			<Spin tip={loadingText} spinning={uploadLoading||loading}>
-			<div>
+				<div>
 				<LabelFieldSet label="Name" err={(hasSubmitted||name.touched)&&name.error}>
 					<input className="form-control" {...name}/>
 				</LabelFieldSet>
@@ -144,7 +145,6 @@ class ContactItemForm extends Component {
 						<Button style={{float: 'right'}} type="danger" ghost >Delete</Button>
 				  </Popconfirm>
 				}
-
 			</div>
 		</Spin>
 		)

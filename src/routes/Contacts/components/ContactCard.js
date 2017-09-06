@@ -5,6 +5,8 @@ import {Col, Row, Popover, Button, message, Icon, Avatar, Popconfirm, Tooltip} f
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
 import {updateContactById} from '../../../store/contactsQuery';
+import {phoneFormat} from '../../../lib/formatter';
+import R from 'ramda';
 
 const columns = [
 
@@ -19,7 +21,7 @@ const columns = [
 	},
 	{
 		key: 'phone',
-		label: 'Phone',
+		label: 'Phone'
 	},
 	{
 		key: 'address',
@@ -67,16 +69,13 @@ class ContactCard extends React.Component{
 		const {_id, name, color='white', deleted=false, ...rest } = info;
 		const colorObj = colors.find(c => c.id == color);
 
-		console.log('info and color', info, color, colors);
 		const nameTitle = <p><SearchHighlight search={search} value={name} /></p>;
 
-		console.log('search in cars', search);
-
-		const renderRow = (label, value) => (
+		const renderRow = (label, value, format=R.identity) => (
 			<div key={label}>
 				<p style={{ fontWeight: 'bold', fontSize: 12, color: colorObj.titleColor||'#AAAAAA' }}>{label}</p>
 				<span style={{ color:colorObj.font}}>
-					<SearchHighlight search={search} value={value} />
+					<SearchHighlight search={search} value={format(value)} />
 				</span>
 			</div>
 		);
@@ -110,7 +109,7 @@ class ContactCard extends React.Component{
 
 
 		return (
-			<Card style={{ backgroundColor: colorObj.value, margin: 5 }} className="contact-card" headerStyle={{ backgroundColor: 'red' }} bordered={false} >
+			<Card style={{ backgroundColor: colorObj.value, margin: 5 }} className="contact-card" bordered={false} >
 				<div className="card-title">
 					<div className="title-text" style={{color:colorObj.font}}>{nameTitle}</div>
 					<div className="title-extra">
@@ -120,7 +119,7 @@ class ContactCard extends React.Component{
 				<Row style={{minHeight:30}} onClick={() => onEditClick(info)}>
 					<Col  className="card-text">
 						{
-							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key]))
+							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key], c.format))
 						}
 					</Col>
 				</Row>
