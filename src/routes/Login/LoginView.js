@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux';
 import { Icon, Input, Button, message } from 'antd';
-import {signinWithFirebase} from '../../store/fireConnection';
+import {signinWithFirebase} from '../../fireQuery/fireConnection';
 import {browserHistory} from 'react-router';
 import './LoginView.scss';
 

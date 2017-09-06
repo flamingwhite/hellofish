@@ -8,8 +8,9 @@ import PhoneInput from '../../../commonCmps/PhoneInput';
 import validator from 'validator';
 import simpleForm from '../../../lib/simpleForm';
 import ImageViewer from '../../../commonCmps/ImageViewer';
-import {getBusinessCardRef} from '../../../store/fireConnection';
+import {getBusinessCardRef} from '../../../fireQuery/fireConnection';
 import createUUID from '../../../lib/uuidTool';
+import TagInputContainer from '../containers/TagInputContainer';
 import R from 'ramda';
 
 const validation = ({ name='', email='', phone='', address='' }) => {
@@ -17,8 +18,8 @@ const validation = ({ name='', email='', phone='', address='' }) => {
 	const err = {};
 	if (name.trim().length == 0) err.name = 'Name cannot be blank';
 	if (!R.isEmpty(email.trim()) && !validator.isEmail(email)) err.email = 'Email is not valid';
-	if (!R.isEmpty(phone.trim()) && !validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
-	console.log('errs ', err);
+	// if (!R.isEmpty(phone.trim()) && !validator.isMobilePhone(phone, 'any')) err.phone = 'Phone is not valid';
+	// console.log('errs ', err);
 	return err;
 };
 
@@ -31,7 +32,7 @@ function getBase64(img, callback) {
 
 @connect()
 @simpleForm({
-	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'comments', 'downloadURL', 'cardImageName'],
+	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'tagKeys', 'comments', 'downloadURL', 'cardImageName'],
 	validate: validation
 })
 class ContactItemForm extends Component {
@@ -57,6 +58,8 @@ class ContactItemForm extends Component {
 		const { fields, isFormValid, onOk, preSubmit } = this.props;
 		const { cardImage, cardImageName, imageDeleted } = this.state;
 		const { originalImageName } = this;
+
+		console.log('to update the fields', fields);
 		preSubmit();
 		if (!isFormValid) {
 			message.error('Information is not valid');
@@ -102,7 +105,7 @@ class ContactItemForm extends Component {
 		console.log('fields', this.props);
 
 		const { submit, onFileSelect, onDeleteFile } = this;
-		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete, loading = false, loadingText = 'Loading' } = this.props;
+		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete, loading = false, loadingText = 'Loading', tagKeys=[] } = this.props;
 		const { cardImage, imageSrc, uploadLoading } = this.state;
 
 		return (
@@ -136,6 +139,13 @@ class ContactItemForm extends Component {
 				<LabelFieldSet label="Comments" err={(hasSubmitted||comments.touched)&&comments.error}>
 					<textarea className="form-control" {...comments}/>
 				</LabelFieldSet>	
+
+				<LabelFieldSet label="Tags" err={(hasSubmitted||tagKeys.touched)&&tagKeys.error}>
+					<div style={{ borderBottom: '1px solid lightgray' }}>
+						<TagInputContainer activeTagKeys={tagKeys.value} onTagChange={keys=>tagKeys.onChange(undefined, keys)} />
+					</div>
+				</LabelFieldSet>	
+				
 				<ImageViewer onFileSelect={onFileSelect} buttonText={"Upload Business Card"} onDeleteFile={onDeleteFile} imageSrc={imageSrc}/>
 				<Button style={{marginTop:10}} type="primary" disabled={hasSubmitted&&!isFormValid} onClick={submit}>{okText}</Button>
 				<Button style={{marginLeft:20}} type="default" onClick={onCancel}>{cancelText}</Button>

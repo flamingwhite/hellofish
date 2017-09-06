@@ -164,3 +164,25 @@ body {
 	margin-left: 10px;
 
 }
+
+.tag-input-container {
+	padding: 5px;
+	background-color: white;
+	.tag-input-box {
+		border-color: transparent;
+		min-width:120px;
+	}
+	.tag-input-box:focus {
+		outline: none;
+	}
+}
+
+
+.tag-span {
+	padding-top:2px;
+	padding-right:4px;
+	display: inline-block;
+	text-decoration: underline;
+	cursor: pointer;
+
+}

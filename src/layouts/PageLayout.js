@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import { IndexLink, Link, browserHistory } from 'react-router'
 import PropTypes from 'prop-types'
 import { Layout, Menu } from 'antd';
-import {signoutWithFirebase} from '../store/fireConnection';
+import {signoutWithFirebase} from '../fireQuery/fireConnection';
 import './PageLayout.scss';
 import '../../node_modules/antd/dist/antd.css';
 

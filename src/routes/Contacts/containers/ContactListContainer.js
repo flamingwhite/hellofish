@@ -5,18 +5,22 @@ import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
 import {Input, Modal, Button, message, Icon, Tooltip} from 'antd';
 import { propContains, toggleArrayItem } from '../../../lib/littleFn';
-import {getBusinessCardRef} from '../../../store/fireConnection';
+import {getBusinessCardRef} from '../../../fireQuery/fireConnection';
 import ContactItemForm from './ContactItemForm';
-import {createContact, updateContactById, deleteContactById} from '../../../store/contactsQuery';
+import {createContact, updateContactById, deleteContactById} from '../../../fireQuery/contactsQuery';
 import cardColors from '../../../properties/cardColors';
 import '../../../styles/bricklayer.scss';
 import ColorList from '../components/ColorList';
+import TagInputContainer from '../containers/TagInputContainer';
+import TagList from '../components/TagList';
+import TagListHeader from '../components/TagListHeader';
 import R from 'ramda';
 
 @connect(
 	state => ({
 		contacts: state.contactChunk.contacts,
-		touchOnly: state.env.touchOnly
+		touchOnly: state.env.touchOnly,
+		tags: state.tagChunk.tags
 	})
 )
 class ContactListContainer extends Component {
@@ -31,7 +35,8 @@ class ContactListContainer extends Component {
 			showPhoneTextArea: false,
 			showOnlyDeleted: false,
 			modalLoading: false,
-			activeColorIds: []
+			activeColorIds: [],
+			activeTagKeys: []
 		};
 
 	}
@@ -130,20 +135,25 @@ class ContactListContainer extends Component {
 
 	render() {
 		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact } = this;
-		const { contacts, touchOnly } = this.props;
-		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted, showPhoneTextArea } = this.state;
+		const { contacts, touchOnly, tags } = this.props;
+		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted, showPhoneTextArea, activeTagKeys } = this.state;
 
 		// const visibleContacts = contacts.filter(c => (showOnlyDeleted&&c.deleted)||(!showOnlyDeleted&&!c.deleted) ).filter(propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website']))
 		// 	.filter(c => R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'));
 
 		const visibleContacts = contacts.filter(c => (!showOnlyDeleted == !c.deleted)
 			&& propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website'])(c)
-			&& (R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white') )
+			&& (R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'))
+			&& (R.isEmpty(activeTagKeys) || !R.isEmpty(R.intersection(activeTagKeys, c.tagKeys)))
+			
 		);
 		
 
 		return (
 			<div className="row">
+				<div style={{ width: '100%', marginBottom:10 }}>
+					<TagListHeader activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
+				</div>
 				{
 					showEmailTextArea ?
 					<Tooltip title="Hide Emails">					
@@ -204,7 +214,7 @@ class ContactListContainer extends Component {
 					} />
 				}
 				
-				<ContactList touchOnly={touchOnly} search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} onRevertContact={revertContact} completelyDeleteContact={completelyDeleteContact}/>
+				<ContactList tags={tags} touchOnly={touchOnly} search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} onRevertContact={revertContact} completelyDeleteContact={completelyDeleteContact}/>
 
 				{
 					contactInEdit &&

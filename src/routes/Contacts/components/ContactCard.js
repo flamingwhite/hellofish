@@ -4,8 +4,9 @@ import SearchHighlight from '../../../commonCmps/SearchHighlight';
 import {Col, Row, Popover, Button, message, Icon, Avatar, Popconfirm, Tooltip} from 'antd';
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
-import {updateContactById} from '../../../store/contactsQuery';
+import {updateContactById} from '../../../fireQuery/contactsQuery';
 import {phoneFormat} from '../../../lib/formatter';
+import TagList from './TagList';
 import R from 'ramda';
 
 const columns = [
@@ -63,7 +64,7 @@ class ContactCard extends React.Component{
 
 	}
 	render() {
-		const { info, search, onEditClick, touchOnly, onRevertContact, completelyDeleteContact } = this.props;
+		const { info, search, onEditClick, touchOnly, onRevertContact, completelyDeleteContact, tags } = this.props;
 		const { setContactColor, setHovering } = this;
 		// const { name, age, email, phone, search} = props;
 		const {_id, name, color='white', deleted=false, ...rest } = info;
@@ -74,7 +75,7 @@ class ContactCard extends React.Component{
 		const renderRow = (label, value, format=R.identity) => (
 			<div key={label}>
 				<p style={{ fontWeight: 'bold', fontSize: 12, color: colorObj.titleColor||'#AAAAAA' }}>{label}</p>
-				<span style={{ color:colorObj.font}}>
+				<span style={{ color:colorObj.font, wordWrap:'break-word'}}>
 					<SearchHighlight search={search} value={format(value)} />
 				</span>
 			</div>
@@ -120,6 +121,18 @@ class ContactCard extends React.Component{
 					<Col  className="card-text">
 						{
 							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key], c.format))
+						} 
+						{
+							!R.isEmpty(info.tagKeys) &&
+							<div>
+								<p style={{ fontWeight: 'bold', fontSize: 12, color: colorObj.titleColor||'#AAAAAA' }}>{'Tags'}</p>
+								<span style={{ color:colorObj.font, wordWrap:'break-word'}}>
+									<TagList color={colorObj.font} tags={
+										info.tagKeys.map(t => tags.find(tg => tg.key==t)).filter(x => x)}
+									/>
+								</span>
+							</div>	
+
 						}
 					</Col>
 				</Row>
