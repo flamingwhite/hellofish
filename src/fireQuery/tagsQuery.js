@@ -1,6 +1,5 @@
 const { getFireDB } = require('./fireConnection');
 const {fireRef} = require('../lib/firedog');
-import {tagSeparator} from '../properties/constants';
 
 const contactTagRef = fireRef(getFireDB().ref('contactTags/'));
 

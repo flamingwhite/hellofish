@@ -13,7 +13,7 @@ import '../../../styles/bricklayer.scss';
 import ColorList from '../components/ColorList';
 import TagInputContainer from '../containers/TagInputContainer';
 import TagList from '../components/TagList';
-import TagListHeader from '../components/TagListHeader';
+import TagListHeaderContainer from '../containers/TagListHeaderContainer';
 import R from 'ramda';
 
 @connect(
@@ -144,7 +144,7 @@ class ContactListContainer extends Component {
 		const visibleContacts = contacts.filter(c => (!showOnlyDeleted == !c.deleted)
 			&& propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website'])(c)
 			&& (R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'))
-			&& (R.isEmpty(activeTagKeys) || !R.isEmpty(R.intersection(activeTagKeys, c.tagKeys)))
+			&& (R.isEmpty(activeTagKeys) || R.intersection(activeTagKeys, c.tagKeys).length==activeTagKeys.length)
 			
 		);
 		
@@ -152,7 +152,7 @@ class ContactListContainer extends Component {
 		return (
 			<div className="row">
 				<div style={{ width: '100%', marginBottom:10 }}>
-					<TagListHeader activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
+					<TagListHeaderContainer activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
 				</div>
 				{
 					showEmailTextArea ?
