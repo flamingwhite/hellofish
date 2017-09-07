@@ -144,8 +144,7 @@ class ContactListContainer extends Component {
 		const visibleContacts = contacts.filter(c => (!showOnlyDeleted == !c.deleted)
 			&& propContains(searchKey, ['name', 'email', 'phone', 'address', 'comments', 'facebook', 'instagram', 'website'])(c)
 			&& (R.isEmpty(activeColorIds) || activeColorIds.includes(c.color || 'white'))
-			&& (R.isEmpty(activeTagKeys) || R.intersection(activeTagKeys, c.tagKeys).length==activeTagKeys.length)
-			
+			&& (R.isEmpty(activeTagKeys) || R.all(key => (c.tagKeySet || {})[key], activeTagKeys))
 		);
 		
 

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {Tag, Modal, Tabs, message, Card, Icon, Popconfirm} from 'antd';
+import {Tag, Modal, Tabs, message, Card, Icon, Popconfirm, Input} from 'antd';
 import TagListHeader from '../components/TagListHeader';
 import {toggleArrayItem} from '../../../lib/littleFn';
 import {updateContactTagById} from '../../../fireQuery/tagsQuery';
@@ -16,14 +16,14 @@ class TagListHeaderContainer extends Component {
 		edittingTags: false
 	}
 
-	archiveTag = _id => {
-		updateContactTagById(_id, { archived: true })
-			.then(() => message.success('Tag archived'))
+	archiveTag = tag => {
+		updateContactTagById(tag._id, { archived: true })
+			.then(() => message.success(`Tag ${tag.label} archived`))
 	}
 
-	unarchivedTag = _id => {
-		updateContactTagById(_id, { archived: false })
-			.then(() => message.success('Tag restored'));
+	unarchivedTag = tag => {
+		updateContactTagById(tag._id, { archived: false })
+			.then(() => message.success(`Tag ${tag.label} restored`));
 
 	}
 
@@ -32,25 +32,73 @@ class TagListHeaderContainer extends Component {
 		onActiveTagsChange(toggleArrayItem(activeTagKeys, tag.key))
 	}
 
+	startEdittingLabel = tag => this.setState({
+		tagInEdit: tag,
+		tempLabel: tag.label
+	});
+
+	handleKeyPress = e => {
+		if (e.key != 'Enter') return;
+		const { tagInEdit, tempLabel } = this.state;
+		if (this.editErrorMsg(tagInEdit.label, tempLabel) != null) return;
+
+		updateContactTagById(tagInEdit._id, { label: tempLabel })
+			.then(r => {
+				console.log(r);
+				message.success(`Tag ${tagInEdit.label} changed to ${tempLabel}`)
+				this.setState({
+					tagInEdit: null,
+					tempLabel: ''
+				});
+			})
+
+	}
+
+	editErrorMsg = (oldLabel = '', newLabel = '') => { 
+		const { tags } = this.props;
+		return !newLabel.trim() ? 'Cannot be blank' :
+		oldLabel.trim() == newLabel.trim() ? '' :
+		tags.find(tg => (tg.label || '').trim() == newLabel.trim()) ? 'Duplicated tag name' : null		
+	}
+
+
 	render() {
 
 		const { onActiveTagsChange, tags, ...rest } = this.props;
-		const { edittingTags } = this.state;
+		const { edittingTags, tagInEdit, tempLabel } = this.state;
+		const { startEdittingLabel, handleKeyPress, editErrorMsg } = this;
 
 		const renderActive = tag => (
-			<div className="row">
-				<div className="col-10"> {tag.label} </div>
-				<Popconfirm title="Are you sure archive this Tag?" onConfirm={() =>this.archiveTag(tag._id)} onCancel={() => { }} okText="Yes" cancelText="No">
+			<div className="row" style={{ padding: 3 }}>
+				<div className="col-10">
+					{
+						tagInEdit != tag?
+						<a onClick={()=>startEdittingLabel(tag)}>{tag.label}</a>
+						: [
+							<Input
+								value={tempLabel}
+								onKeyPress={handleKeyPress}
+								onChange={e => this.setState({ tempLabel: e.target.value })}
+								style={{ width: 120 }}
+								suffix={editErrorMsg(tag.label, tempLabel) ==null && <Icon type="check" style={{color:'green'}} />}
+								/>,
+							<a style={{marginLeft:8}} onClick={()=>this.setState({tagInEdit: null})}>Cancel</a>,
+							<span className="tag-error danger text-danger">{ editErrorMsg(tag.label, tempLabel) }</span>
+						]
+					}
+					
+				</div>
+				<Popconfirm title={`Are you sure archive ${tag.label}?`} onConfirm={() =>this.archiveTag(tag)} onCancel={() => { }} okText="Yes" cancelText="No">
 					<a href="#">Archive</a>
 				</Popconfirm>
 			</div>
 		);
 
 		const renderArchived = tag => (
-			<div className="row">
+			<div className="row" style={{ padding: 3 }}>
 				<div className="col-6"> {tag.label} </div>
-				<a className="col-2" href="#" onClick={() => this.unarchivedTag(tag._id)}>Restore</a>
-				<Popconfirm title="Are you sure permanently this Tag? This action is not reversable" onConfirm={() => { }} onCancel={() => { }} okText="Yes" cancelText="No">
+				<a className="col-2" href="#" onClick={() => this.unarchivedTag(tag)}>Restore</a>
+				<Popconfirm title={`Are you sure permanently ${tag.label}? This action is not reversable`} onConfirm={() => { }} onCancel={() => { }} okText="Yes" cancelText="No">
 					<a className="col-4" href="#">permanently Delete</a>
 				</Popconfirm>
 			</div>
@@ -63,7 +111,6 @@ class TagListHeaderContainer extends Component {
 				{
 					edittingTags &&
 					<Modal
-						title={"Edit Tags"}
 						visible={edittingTags}
 						onCancel={() => this.setState({edittingTags: false})}
 						footer={null}

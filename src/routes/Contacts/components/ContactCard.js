@@ -118,17 +118,20 @@ class ContactCard extends React.Component{
 					</div>	
 				</div>
 				<Row style={{minHeight:30}} onClick={() => onEditClick(info)}>
-					<Col  className="card-text">
+					<Col className="card-text">
 						{
 							columns.filter(c => !c.notShow && info[c.key]!=null && info[c.key]!='').map(c => renderRow(c.label, info[c.key], c.format))
 						} 
 						{
-							!R.isEmpty(info.tagKeys) &&
+							R.is(Object, info.tagKeySet) &&
+							!R.isEmpty(info.tagKeySet) &&
 							<div>
 								<p style={{ fontWeight: 'bold', fontSize: 12, color: colorObj.titleColor||'#AAAAAA' }}>{'Tags'}</p>
 								<span style={{ color:colorObj.font, wordWrap:'break-word'}}>
 									<TagList color={colorObj.font} tags={
-										info.tagKeys.map(t => tags.find(tg => tg.key==t)).filter(x => x)}
+										R.keys(info.tagKeySet)
+											.map(t => tags.find(tg => tg.key == t))
+											.filter(x => x)}
 									/>
 								</span>
 							</div>	

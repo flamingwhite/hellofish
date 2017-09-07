@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {message, Spin} from 'antd';
 import TagInput from '../components/TagInput';
 import {createContactTag, updateContactTagById} from '../../../fireQuery/tagsQuery';
+import R from 'ramda';
 
 @connect(
 	state => ({
@@ -12,10 +13,10 @@ import {createContactTag, updateContactTagById} from '../../../fireQuery/tagsQue
 export default class TagInputContainer extends Component {
 	state = {
 		loading: false
-	 };
+	}
 
 	addNewTag = label => {
-		const { onTagChange, activeTagKeys } = this.props;
+		const { onTagSetChange, selectedTagSet } = this.props;
 		if (!label) return;
 
 		const cleanLabel = label.split(' ').reduce((acc, cur) => acc + cur.slice(0, 1).toUpperCase() + cur.slice(1));
@@ -28,11 +29,13 @@ export default class TagInputContainer extends Component {
 		this.setState({
 			loading: true
 		});
+
 		return createContactTag(tag)
 			.then(r => {
 				console.log(r);
 				message.success(label+ ' created');
-				onTagChange([...activeTagKeys, tag.key])
+				// onTagChange([...activeTagKeys, tag.key])
+				onTagSetChange( selectedTagSet[tag.key]? R.dissoc(tag.key, selectedTagSet): R.assoc(tag.key, true, selectedTagSet) )
 				this.setState({loading: false})
 
 			}).catch(e => {
@@ -43,13 +46,14 @@ export default class TagInputContainer extends Component {
 	}
 
 	onTagSelect = tag => {
-		const { onTagChange, activeTagKeys } = this.props;
-		onTagChange([...activeTagKeys, tag.key]);
+		const { onTagSetChange, selectedTagSet } = this.props;
+		onTagSetChange(R.assoc(tag.key, true, selectedTagSet))
+
 	}
 
 	onClose = tag => {
-		const { onTagChange, activeTagKeys } = this.props;
-		onTagChange(activeTagKeys.filter(k => k != tag.key));
+		const { onTagSetChange, selectedTagSet } = this.props;
+		onTagSetChange(R.dissoc(tag.key, selectedTagSet));
 	}
 
 

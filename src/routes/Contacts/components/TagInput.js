@@ -22,22 +22,26 @@ class TagInput extends Component {
 
 
 	render() {
-		const { tags, addNewTag, onTagSelect, activeTagKeys=[], onClose } = this.props;
+		const { tags, addNewTag, onTagSelect, selectedTagSet = {}, onClose } = this.props;
 		const { search, value } = this.state;
 		const {handleChange} = this;
 
 		const renderTag = tag => <Tag key={tag.key} closable onClose={() => onClose(tag)}>{tag.label}</Tag>
 
-		const filterTags = str => tags.filter(tg => tg.label && !activeTagKeys.includes(tg.key) && tg.label.includes(str)).map(tg => tg.label);
+		const filterTags = str => tags.filter(tg =>
+			tg.label &&
+			!selectedTagSet[tg.key]
+			&& tg.label.includes(str)
+		).map(tg => tg.label);
 
 
 		console.log('tags', tags);
-		console.log('activetags', activeTagKeys);
+		console.log('activetags', selectedTagSet);
 
 		return (
 			<div className="tag-input-container">
 				{
-					activeTagKeys.map(key => tags.find(tg => tg.key==key)).filter(tg => tg!=null).map(renderTag)
+					Object.keys(selectedTagSet).map(key => tags.find(tg => tg.key==key)).filter(tg => tg!=null).map(renderTag)
 				}
 				<AutoComplete
 					dataSource={filterTags(search)}

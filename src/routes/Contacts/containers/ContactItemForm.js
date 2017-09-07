@@ -32,7 +32,7 @@ function getBase64(img, callback) {
 
 @connect()
 @simpleForm({
-	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'tagKeys', 'comments', 'downloadURL', 'cardImageName'],
+	fields: ['name', 'email', 'phone', 'company', 'address', 'website', 'instagram', 'facebook', 'tagKeySet', 'comments', 'downloadURL', 'cardImageName'],
 	validate: validation
 })
 class ContactItemForm extends Component {
@@ -105,7 +105,7 @@ class ContactItemForm extends Component {
 		console.log('fields', this.props);
 
 		const { submit, onFileSelect, onDeleteFile } = this;
-		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete, loading = false, loadingText = 'Loading', tagKeys=[] } = this.props;
+		const { initData, fields, name, phone, email, address, company, website, instagram, facebook, comments, hasSubmitted, okText = 'Ok', cancelText = 'Cancel', onOk, onCancel, isFormValid, showDelete, onDelete, loading = false, loadingText = 'Loading', tagKeySet={} } = this.props;
 		const { cardImage, imageSrc, uploadLoading } = this.state;
 
 		return (
@@ -140,9 +140,9 @@ class ContactItemForm extends Component {
 					<textarea className="form-control" {...comments}/>
 				</LabelFieldSet>	
 
-				<LabelFieldSet label="Tags" err={(hasSubmitted||tagKeys.touched)&&tagKeys.error}>
+				<LabelFieldSet label="Tags" err={(hasSubmitted||tagKeySet.touched)&&tagKeySet.error}>
 					<div style={{ borderBottom: '1px solid lightgray' }}>
-						<TagInputContainer activeTagKeys={tagKeys.value} onTagChange={keys=>tagKeys.onChange(undefined, keys)} />
+						<TagInputContainer selectedTagSet={tagKeySet.value} onTagSetChange={keySet=>tagKeySet.onChange(undefined, keySet)} />
 					</div>
 				</LabelFieldSet>	
 				
