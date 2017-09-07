@@ -7,7 +7,7 @@ import {Input, Modal, Button, message, Icon, Tooltip} from 'antd';
 import { propContains, toggleArrayItem } from '../../../lib/littleFn';
 import {getBusinessCardRef} from '../../../fireQuery/fireConnection';
 import ContactItemForm from './ContactItemForm';
-import {createContact, updateContactById, deleteContactById} from '../../../fireQuery/contactsQuery';
+import {createContact, updateContactById, deleteContactById, getContactsRef} from '../../../fireQuery/contactsQuery';
 import cardColors from '../../../properties/cardColors';
 import '../../../styles/bricklayer.scss';
 import ColorList from '../components/ColorList';
@@ -124,6 +124,16 @@ class ContactListContainer extends Component {
 
 	revertContact = _id => this.completeEdit( updateContactById(_id, {deleted: false}) , `Contact ${name} Restored`);
 
+	deleteTagFromContacts = tag => {
+
+		const { contacts } = this.props;
+		const { key } = tag;
+		const updates = {};
+		contacts.filter(ct => ct.tagKeySet[key])
+			.forEach(ct => updates[`${ct._id}/tagKeySet/${tag.key}`] = null);
+		getContactsRef().update(updates);
+	}
+
 
 	toggleColor = color => {
 		const colorId = color.id;
@@ -134,7 +144,7 @@ class ContactListContainer extends Component {
 	}
 
 	render() {
-		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact } = this;
+		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact, deleteTagFromContacts} = this;
 		const { contacts, touchOnly, tags } = this.props;
 		const { searchKey, contactInEdit, inNewMode, showEmailTextArea, activeColorIds, modalLoading, showOnlyDeleted, showPhoneTextArea, activeTagKeys } = this.state;
 
@@ -151,7 +161,7 @@ class ContactListContainer extends Component {
 		return (
 			<div className="row">
 				<div style={{ width: '100%', marginBottom:10 }}>
-					<TagListHeaderContainer activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
+					<TagListHeaderContainer afterTagDelete={tag => deleteTagFromContacts(tag)} activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
 				</div>
 				{
 					showEmailTextArea ?

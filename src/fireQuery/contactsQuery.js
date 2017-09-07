@@ -16,6 +16,7 @@ import R from 'ramda';
 // 	tagKeys: contact.tagKeys ? contact.tagKeys.join(tagSeparator) : ''
 // });
 
+export const getContactsRef = () => getFireDB().ref('contacts/');
 export const contactsList = () =>
 	contactsRef.arrayStream()
 	.map(arr => arr.map(ct => ({

@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {Tag, Modal, Tabs, message, Card, Icon, Popconfirm, Input} from 'antd';
 import TagListHeader from '../components/TagListHeader';
 import {toggleArrayItem} from '../../../lib/littleFn';
-import {updateContactTagById} from '../../../fireQuery/tagsQuery';
+import {updateContactTagById, deleteContactTagById} from '../../../fireQuery/tagsQuery';
 
 @connect(
 	state => ({
@@ -54,6 +54,14 @@ class TagListHeaderContainer extends Component {
 
 	}
 
+	permanentlyDeleteTag = tag => {
+		const { afterTagDelete } = this.props;
+		return deleteContactTagById(tag._id)
+			.then(() => afterTagDelete(tag))
+
+
+	}
+
 	editErrorMsg = (oldLabel = '', newLabel = '') => { 
 		const { tags } = this.props;
 		return !newLabel.trim() ? 'Cannot be blank' :
@@ -99,7 +107,7 @@ class TagListHeaderContainer extends Component {
 				<div className="col-6"> {tag.label} </div>
 				<a className="col-2" href="#" onClick={() => this.unarchivedTag(tag)}>Restore</a>
 				<Popconfirm title={`Are you sure permanently ${tag.label}? This action is not reversable`} onConfirm={() => { }} onCancel={() => { }} okText="Yes" cancelText="No">
-					<a className="col-4" href="#">permanently Delete</a>
+					<a className="col-4" href="#" onClick={()=>this.permanentlyDeleteTag(tag)}>permanently Delete</a>
 				</Popconfirm>
 			</div>
 		);

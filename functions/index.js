@@ -29,3 +29,7 @@ exports.contactsChanges = functions.database.ref('/contacts/{pushId}').onWrite(e
 	console.log(event);
 	console.log(event.data.val());
 });
+
+exports.deleteTagFromContacts = functions.database.ref('/contactTags').onCreate(event => {
+	console.log('a tag is created', event.data.val())
+})

@@ -83,6 +83,11 @@ const createStore = (initialState = {}) => {
 
 	})
 
+	getFirebase().database().ref('contacts').on('value', v => console.log(v.val(), 'keyssss'))
+	getFirebase().database().ref('contacts').orderByChild('website').startAt('google.com')
+		.on('value', v => console.log(v.val(), 'keyssss'))
+
+
 
 
 
