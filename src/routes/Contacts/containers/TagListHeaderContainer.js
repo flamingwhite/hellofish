@@ -113,7 +113,7 @@ class TagListHeaderContainer extends Component {
 		);
 
 		return (
-			<div>
+			<span>
 				<TagListHeader {...rest} tags={tags.filter(tg=>!tg.archived)} onTagClick={this.onTagClick} />
 				<Tag onClick={() => this.setState({edittingTags: true})}>Manage Tags</Tag>
 				{
@@ -141,7 +141,7 @@ class TagListHeaderContainer extends Component {
 					</Modal>	
 
 				}
-			</div>
+			</span>
 		);
 	}
 }

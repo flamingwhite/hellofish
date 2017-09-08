@@ -163,9 +163,9 @@ class ContactListContainer extends Component {
 		return (
 			<div className="row">
 				<div style={{ width: '100%', marginBottom:10 }}>
+					<Tag color="pink">{visibleContacts.length} Contacts</Tag>
 					<TagListHeaderContainer afterTagDelete={tag => deleteTagFromContacts(tag)} activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
 				</div>
-				<Tag color="pink">{visibleContacts.length} Contacts</Tag>
 				{
 					showEmailTextArea ?
 					<Tooltip title="Hide Emails">					
@@ -198,12 +198,12 @@ class ContactListContainer extends Component {
 					</Tooltip>
 				}
 				<Input
-					placeholder="input search text"
+					placeholder="Search"
 					className="col-4 col-xs-6"
 					onChange={onSearchChange}
 					style={{marginLeft:10}}
 				/>
-				<Button className="" style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
+				<Button style={{marginLeft:20}} type="primary" icon="plus" onClick={newContactClick}>New</Button>
 				<p/>
 
 				<div>
