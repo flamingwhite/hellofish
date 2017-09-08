@@ -6,8 +6,8 @@ import VisibilitySensor from 'react-visibility-sensor';
 
 export default class ContactList extends React.Component {
 	state = {
-		perPage: 5,
-		visibleCount: 5,
+		perPage: 6,
+		visibleCount: 12,
 		loadedAll: false,
 	};
 
@@ -24,22 +24,21 @@ export default class ContactList extends React.Component {
 
 	}
 
-	componentDidUpdate(prevProps, prevState) {
-		const { isVisible, loadedAll } = this.state;
+	componentDidUpdate = (prevProps, prevState) => {
+		
 		setTimeout(() => {
-		console.log('loaded all isvisible', loadedAll, isVisible);
-		if (!loadedAll && isVisible) {
-			console.log('keep loading once more in didUpdate');
-			this.loadMore();
-		}
+			const { isVisible, loadedAll } = this.state;
+			if (!loadedAll && isVisible) {
+				this.loadMore();
+			}
 
-		}, 300)
+		},300)
 	}
 
 	loadMore = () => {
 		const { perPage, visibleCount } = this.state;
 		const { contacts } = this.props;
-		if (visibleCount == contacts.length) {
+		if (visibleCount >= contacts.length) {
 			this.setState({
 				loadedAll: true
 			});
@@ -47,8 +46,6 @@ export default class ContactList extends React.Component {
 		}
 		let newCount = visibleCount + perPage;
 		if (newCount > contacts.length) {
-			console.log('loaded all do nothing');
-			
 			newCount = contacts.length
 		}
 		this.setState({
@@ -58,17 +55,12 @@ export default class ContactList extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		// if (this.props.contacts != nextProps.contacts) {
-		// 	console.log('contacts changed !!!!!!!!!!!!!!!, reset count');
-		// 	this.setState({ visibleCount: 5 });
-		// }
-
 		console.log(this.props.contacts.length, nextProps.contacts.length);
 		if (this.props.contacts != nextProps.contacts) {
 			console.log('reset state, !!!!!!!!!');
 			this.setState({
 				loadedAll: false,
-				visibleCount: 5
+				visibleCount: 12
 			});
 		}
 	}
@@ -79,19 +71,17 @@ export default class ContactList extends React.Component {
 		const loadedCts = contacts.slice(0, visibleCount);
 
 		return (
-
 			<div style={{ width: '100%' }}>
-					{this.state.visibleCount}
+				{/*<div style={{position: 'fixed', background: 'white', zIndex:100}}>{this.state.visibleCount}</div> */}
 					<Masonry
 						style={{ width: '100%' }}
 						options={{transitionDuration: 100}}
 					>
-
 					{
 						loadedCts.map(ct => <Col key={ct._id} xs={24} sm={12} md={8} lg={6} xl={4}> <ContactCard  {...rest} info={ct}/> </Col>)
 					}
 
-					<VisibilitySensor xs={24} sm={12} md={8} lg={6} xl={4} style={{backgroundColor:'red', height:15}} onChange={this.onVisibleChange} />
+					<VisibilitySensor xs={24} sm={12} md={8} lg={6} xl={4} onChange={this.onVisibleChange} />
 
 				</Masonry>
 			</div>

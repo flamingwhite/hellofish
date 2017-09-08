@@ -3,7 +3,7 @@ import {
 } from 'react-redux';
 import ContactList from '../components/ContactList';
 import React, {Component} from 'react';
-import {Input, Modal, Button, message, Icon, Tooltip} from 'antd';
+import {Tag,Input, Modal, Button, message, Icon, Tooltip} from 'antd';
 import { propContains, toggleArrayItem } from '../../../lib/littleFn';
 import {getBusinessCardRef} from '../../../fireQuery/fireConnection';
 import ContactItemForm from './ContactItemForm';
@@ -165,6 +165,7 @@ class ContactListContainer extends Component {
 				<div style={{ width: '100%', marginBottom:10 }}>
 					<TagListHeaderContainer afterTagDelete={tag => deleteTagFromContacts(tag)} activeTagKeys={activeTagKeys} onActiveTagsChange={keys=>this.setState({activeTagKeys: keys})} tags={tags}/>
 				</div>
+				<Tag color="pink">{visibleContacts.length} Contacts</Tag>
 				{
 					showEmailTextArea ?
 					<Tooltip title="Hide Emails">					
