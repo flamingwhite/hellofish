@@ -106,8 +106,8 @@ class TagListHeaderContainer extends Component {
 			<div className="row" style={{ padding: 3 }}>
 				<div className="col-6"> {tag.label} </div>
 				<a className="col-2" href="#" onClick={() => this.unarchivedTag(tag)}>Restore</a>
-				<Popconfirm title={`Are you sure permanently ${tag.label}? This action is not reversable`} onConfirm={() => { }} onCancel={() => { }} okText="Yes" cancelText="No">
-					<a className="col-4" href="#" onClick={()=>this.permanentlyDeleteTag(tag)}>permanently Delete</a>
+				<Popconfirm title={`Are you sure permanently ${tag.label}? \nThe app will also delete this tag from Contacts. \nThis action is not reversable`} onConfirm={()=>this.permanentlyDeleteTag(tag)} onCancel={() => { }} okText="Yes" cancelText="No">
+					<a className="col-4 text-danger" >permanently Delete</a>
 				</Popconfirm>
 			</div>
 		);

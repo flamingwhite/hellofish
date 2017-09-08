@@ -126,12 +126,14 @@ class ContactListContainer extends Component {
 
 	deleteTagFromContacts = tag => {
 
-		const { contacts } = this.props;
-		const { key } = tag;
-		const updates = {};
-		contacts.filter(ct => ct.tagKeySet[key])
-			.forEach(ct => updates[`${ct._id}/tagKeySet/${tag.key}`] = null);
-		getContactsRef().update(updates);
+		console.log(tag, 'is deleted by user');
+
+		// const { contacts } = this.props;
+		// const { key } = tag;
+		// const updates = {};
+		// contacts.filter(ct => ct.tagKeySet[key])
+		// 	.forEach(ct => updates[`${ct._id}/tagKeySet/${tag.key}`] = null);
+		// getContactsRef().update(updates);
 	}
 
 

@@ -10,7 +10,7 @@ const TagListHeader = props => {
 
 	const tagColor = tag => activeTagKeys.includes(tag.key) ? '#f50' : 'blue';
 
-	const renderTag = tag => <Tag onClick={()=> onTagClick(tag)} color={tagColor(tag)} key={tag.key} >{tag.label}</Tag>
+	const renderTag = tag => <Tag onClick={() => onTagClick(tag)} color={tagColor(tag)} key={tag.key} style={{marginBottom: 7}}>{tag.label}</Tag>
 
 	return (
 		<span {...rest}>
