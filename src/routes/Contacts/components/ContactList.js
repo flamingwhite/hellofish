@@ -56,7 +56,7 @@ export default class ContactList extends React.Component {
 
 	componentWillReceiveProps(nextProps) {
 		console.log(this.props.contacts.length, nextProps.contacts.length);
-		if (this.props.contacts != nextProps.contacts) {
+		if (this.props.contacts.length != nextProps.contacts.length) {
 			console.log('reset state, !!!!!!!!!');
 			this.setState({
 				loadedAll: false,

@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import createStore from './store/createStore'
+// import createStore from './store/createStore'
+import store from './store/reduxStore';
 import './styles/main.scss'
 
 // Store Initialization
 // ------------------------------------
-const store = createStore(window.__INITIAL_STATE__)
+// const store = createStore(window.__INITIAL_STATE__)
 
 // Render Setup
 // ------------------------------------
