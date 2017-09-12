@@ -199,10 +199,12 @@ class ContactListContainer extends Component {
 					</Tooltip>
 				}
 
-
+				{/*
+				//To show a traffic map to home. Disabled for now
 				<Tooltip title="Trafic to Home">					
 					<Icon type="car" className="fn-icon" onClick={()=>this.setState({showTrafficModal: true})}/>
 				</Tooltip>
+				*/}
 
 				<Input
 					placeholder="Search"

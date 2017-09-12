@@ -12,7 +12,11 @@
     "test": "cross-env NODE_ENV=test karma start build/karma.config",
     "test:watch": "npm test -- --watch",
     "lint": "eslint .",
-    "lint:fix": "npm run lint -- --fix"
+	"lint:fix": "npm run lint -- --fix",
+	"functions": "babel 'functionsES6' --out-dir='functions' --copy-files --ignore 'node_modules'",
+	"prefunctions": "rimraf functions",
+	"postfunctions": "cd functions && yarn"
+
   },
   "repository": {
     "type": "git",

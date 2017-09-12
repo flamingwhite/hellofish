@@ -1,29 +1,39 @@
-const functions = require('firebase-functions');
+'use strict';
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+// import functions from 'firebase-functions';
+var functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access the Firebase Realtime Database. 
-const admin = require('firebase-admin');
+var admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
 require('babel-polyfill');
 
-const makeList = (ob = {}) => Object.keys(ob)
-	.map(_id => {
+var makeList = function makeList() {
+	var ob = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+	return (0, _keys2.default)(ob).map(function (_id) {
 		var v = ob[_id];
 		v._id = _id;
 		return v;
 	});
-	
+};
 
 // Take the text parameter passed to this HTTP endpoint and insert it into the
 // Realtime Database under the path /messages/:pushId/original
-exports.addMessage = functions.https.onRequest((req, res) => {
+exports.addMessage = functions.https.onRequest(function (req, res) {
 	// Grab the text parameter.
-	const original = req.query.text;
+	var original = req.query.text;
 	// Push the new message into the Realtime Database using the Firebase Admin SDK.
-	admin.database().ref('/messages').push({original: original}).then(snapshot => {
-	  // Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
-	  res.redirect(303, snapshot.ref);
+	admin.database().ref('/messages').push({ original: original }).then(function (snapshot) {
+		// Redirect with 303 SEE OTHER to the URL of the pushed object in the Firebase console.
+		res.redirect(303, snapshot.ref);
 	});
-  });
+});
 
 // exports.contactsChanges = functions.database.ref('/contacts/{pushId}').onWrite(event => {
 // 	console.log(event.params.pushId);
@@ -32,57 +42,63 @@ exports.addMessage = functions.https.onRequest((req, res) => {
 // 	console.log(event.data.val());
 // });
 
-exports.deleteTagFromContacts = functions.database.ref('/contactTags/{deleteId}').onDelete(event => {
-	const tag = event.data.previous.val();
-	console.log(`[${tag.label}] with key [${tag.key}] Was Deleted from contactsTag. Going to delete it from contacts`);
+exports.deleteTagFromContacts = functions.database.ref('/contactTags/{deleteId}').onDelete(function (event) {
+	var tag = event.data.previous.val();
+	console.log('[' + tag.label + '] with key [' + tag.key + '] Was Deleted from contactsTag. Going to delete it from contacts');
 
-	return admin.database().ref('contacts/').once('value', e => {
+	return admin.database().ref('contacts/').once('value', function (e) {
 
 		console.log(e.val());
-		const contacts = e.val();
-		const contains = Object.keys(contacts)
-			.map(key => {
-				let v = contacts[key];
-				v._id = key;
-				return v;
-			})
-			.filter(tg => (tg.tagKeySet || {})[tag.key]);
+		var contacts = e.val();
+		var contains = (0, _keys2.default)(contacts).map(function (key) {
+			var v = contacts[key];
+			v._id = key;
+			return v;
+		}).filter(function (tg) {
+			return (tg.tagKeySet || {})[tag.key];
+		});
 
-		console.log(`There are [${contains.length}] contacts has this tag. There are ${contains.map(c => c.name)}`);
-		
-		const updates = {};
-		contains.forEach(ct => updates[`${ct._id}/tagKeySet/${tag.key}`] = null);
+		console.log('There are [' + contains.length + '] contacts has this tag. There are ' + contains.map(function (c) {
+			return c.name;
+		}));
+
+		var updates = {};
+		contains.forEach(function (ct) {
+			return updates[ct._id + '/tagKeySet/' + tag.key] = null;
+		});
 		console.log('THe update will be performerd is ,', updates);
-		
+
 		return admin.database().ref('contacts/').update(updates);
 	});
-
 });
 
-exports.cleanContactTags = functions.https.onRequest((req, res) => {
+exports.cleanContactTags = functions.https.onRequest(function (req, res) {
 
-	admin.database().ref('contactTags').once('value', tagv => {
-		const tags = makeList(tagv.val());
-		const tagKeys = tags.map(tg => tg.key);
+	admin.database().ref('contactTags').once('value', function (tagv) {
+		var tags = makeList(tagv.val());
+		var tagKeys = tags.map(function (tg) {
+			return tg.key;
+		});
 
-		admin.database().ref('contacts').once('value', ctv => {
-			const updates = {};
-			const contacts = makeList(ctv.val());
+		admin.database().ref('contacts').once('value', function (ctv) {
+			var updates = {};
+			var contacts = makeList(ctv.val());
 
-			let msg = 'Deleting TAGS:::';
+			var msg = 'Deleting TAGS:::';
 
-			contacts.forEach(ct => {
-				
-				let ts = Object.keys(ct.tagKeySet || {})
-					.filter(key => tagKeys.indexOf(key) < 0)
-				
-				
-				ts.forEach(key => updates[`${ct._id}/tagKeySet/${key}`] = null)
+			contacts.forEach(function (ct) {
 
-				if(ts.length > 0) { 
+				var ts = (0, _keys2.default)(ct.tagKeySet || {}).filter(function (key) {
+					return tagKeys.indexOf(key) < 0;
+				});
+
+				ts.forEach(function (key) {
+					return updates[ct._id + '/tagKeySet/' + key] = null;
+				});
+
+				if (ts.length > 0) {
 					msg += ts.join(', ') + ' from ' + ct.name + '  ...  ';
 				}
-
 			});
 
 			console.log('The clean will be performered is ,', updates);
@@ -90,10 +106,7 @@ exports.cleanContactTags = functions.https.onRequest((req, res) => {
 
 			admin.database().ref('contacts').update(updates);
 
-
-			res.send({msg, updates});
-
+			res.send({ msg: msg, updates: updates });
 		});
 	});
-
-  });  
+});
