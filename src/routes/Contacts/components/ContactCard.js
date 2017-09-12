@@ -90,7 +90,10 @@ class ContactCard extends React.Component{
 
 
 		const extra = deleted ? [
-			<Icon style={{marginRight:12}} type="rollback" onClick={()=>onRevertContact(_id)}/>,	
+
+			<Tooltip title="Restore this contact">
+				<Icon className="cursor-pointer" style={{ marginRight: 12 }} type="rollback" onClick={() => onRevertContact(_id)} />
+			</Tooltip>,	
 			<Popconfirm title="Are you sure to permanently delete this contact?" onConfirm={()=>completelyDeleteContact(_id)} onCancel={() => { }} okText="Yes" cancelText="No">
 				<Tooltip title="Permanently Delete">
 					<Icon type="close"/>
