@@ -5,48 +5,10 @@ import {Col, Row, Popover, Button, message, Icon, Avatar, Popconfirm, Tooltip} f
 import ColorList from './ColorList';
 import colors from '../../../properties/cardColors';
 import {updateContactById} from '../../../fireQuery/contactsQuery';
-import {phoneFormat} from '../../../lib/formatter';
 import TagList from './TagList';
 import R from 'ramda';
+import columns from '../../../properties/contactColumns';
 
-const columns = [
-
-	{
-		key: 'name',
-		label: 'Name',
-		notShow: true
-	},
-	{
-		key: 'email',
-		label: 'Email',
-	},
-	{
-		key: 'phone',
-		label: 'Phone'
-	},
-	{
-		key: 'address',
-		label: 'Address',
-	},
-	{
-		key: 'company',
-		label: 'Company',
-	},
-	{
-		key: 'website',
-		label: 'Website'
-	},
-	{
-		key: 'instagram',
-		label: 'Instagram'
-	}, {
-		key: 'facebook',
-		label: 'Facebook'
-	}, {
-		key: 'comments',
-		label: 'Comments'
-	}
-];
 
 class ContactCard extends React.Component{
 	constructor(props) {

@@ -12,11 +12,10 @@
     "test": "cross-env NODE_ENV=test karma start build/karma.config",
     "test:watch": "npm test -- --watch",
     "lint": "eslint .",
-	"lint:fix": "npm run lint -- --fix",
-	"functions": "babel 'functionsES6' --out-dir='functions' --copy-files --ignore 'node_modules'",
-	"prefunctions": "rimraf functions",
-	"postfunctions": "cd functions && yarn"
-
+    "lint:fix": "npm run lint -- --fix",
+    "functions": "babel 'functionsES6' --out-dir='functions' --copy-files --ignore 'node_modules'",
+    "prefunctions": "rimraf functions",
+    "postfunctions": "cd functions && yarn"
   },
   "repository": {
     "type": "git",
@@ -28,11 +27,13 @@
     "antd": "^2.12.7",
     "babel-polyfill": "^6.26.0",
     "bootstrap": "^4.0.0-alpha",
+    "cheerio": "^1.0.0-rc.2",
     "compression": "^1.6.2",
     "express": "^4.14.0",
     "firebase": "^4.3.0",
     "firebase-admin": "^5.2.1",
     "firebase-functions": "^0.6.3",
+    "flaming": "^0.3.7",
     "jquery": "^3.2.1",
     "object-assign": "^4.1.1",
     "promise": "^7.1.1",

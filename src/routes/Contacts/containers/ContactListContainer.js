@@ -15,6 +15,7 @@ import TagInputContainer from '../containers/TagInputContainer';
 import TagList from '../components/TagList';
 import TagListHeaderContainer from '../containers/TagListHeaderContainer';
 import R from 'ramda';
+import columns from '../../../properties/contactColumns';
 
 @connect(
 	state => ({
@@ -146,6 +147,31 @@ class ContactListContainer extends Component {
 		});
 	}
 
+	exportContacts = contacts => {
+		const columnKeys = R.pluck('key')(columns);
+		let csv = columnKeys.join(',') + ',tags' + '\n';
+		csv += contacts.map(ct => {
+			let str = columnKeys.map(key => ct[key] || '')
+				.map(key => key.includes(',')?`"${key}"`: key)
+				.join(',');
+			if (ct.tagKeySet) {
+				str += ',' + R.keys(ct.tagKeySet).map(k => '@' + k).join(' ');
+			}
+			return str;
+		}).join('\n');
+		const filename = 'contacts.csv';
+		if (!csv.match(/^data:text\/csv/i)) {
+            csv = 'data:text/csv;charset=utf-8,' + csv;
+        }
+        const data = encodeURI(csv);
+
+        const link = document.createElement('a');
+        link.setAttribute('href', data);
+        link.setAttribute('download', filename);
+        link.click();
+
+	}
+
 	render() {
 		const { onSearchChange, onModalCancel, updateContact, openContactDialog, newContactClick, createContact, deleteContact, toggleColor, revertContact, completelyDeleteContact, deleteTagFromContacts} = this;
 		const { contacts, touchOnly, tags } = this.props;
@@ -198,6 +224,11 @@ class ContactListContainer extends Component {
 						<Icon type="delete" className="fn-icon" onClick={()=>this.setState({showOnlyDeleted: true})}/>	
 					</Tooltip>
 				}
+				{
+					<Tooltip title="Export Contacts">					
+						<Icon type="download" className="fn-icon" onClick={()=>this.exportContacts(visibleContacts)}/>
+					</Tooltip>
+				}
 
 				{/*
 				//To show a traffic map to home. Disabled for now
@@ -237,7 +268,7 @@ class ContactListContainer extends Component {
 
 				<ContactList tags={tags} touchOnly={touchOnly} search={searchKey} contacts={visibleContacts} onEditClick={openContactDialog} onRevertContact={revertContact} completelyDeleteContact={completelyDeleteContact}/>
 
-				{
+				{/*{
 					showTrafficModal &&
 					<Modal
 						title={"Traffic to Home"}	
@@ -249,7 +280,7 @@ class ContactListContainer extends Component {
 						<iframe src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d105883.51706200307!2d-84.35317492387183!3d33.97044007941706!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e6!4m5!1s0x88f5a6cd50cafac7%3A0xab7849cc6cc913f3!2sehair+norcross!3m2!1d33.927147!2d-84.217669!4m5!1s0x88f574ea5a5ef381%3A0xc9e2b7a72191d06b!2s2505+Timbercreek+Circle%2C+Roswell%2C+GA!3m2!1d34.047036399999996!2d-84.3299858!5e0!3m2!1sen!2sus!4v1505239889502" width="600" height="450" frameBorder="0" style={{border: 0}} allowFullScreen></iframe>
 					</Modal>	
 
-				}
+				} */}
 
 				{
 					contactInEdit &&

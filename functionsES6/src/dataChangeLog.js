@@ -6,7 +6,12 @@ const logDateChange = params => {
 		console.warn('LOG DATE CHANGE FAILED, no scheme or no data');
 		return;
 	}
-	return admin.database().ref('/eventLogs').push(params)
+	const now = new Date();
+	return admin.database().ref('/eventLogs').push({
+		...params,
+		time: now.getTime(),
+		timeStr: now.toString()
+	});
 }
 
 
