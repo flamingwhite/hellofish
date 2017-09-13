@@ -152,7 +152,7 @@ class ContactListContainer extends Component {
 		let csv = columnKeys.join(',') + ',tags' + '\n';
 		csv += contacts.map(ct => {
 			let str = columnKeys.map(key => ct[key] || '')
-				.map(key => key.includes(',')?`"${key}"`: key)
+				.map(key => (key.includes(',')||key.includes('.'))?`"${key}"`: key)
 				.join(',');
 			if (ct.tagKeySet) {
 				str += ',' + R.keys(ct.tagKeySet).map(k => '@' + k).join(' ');
