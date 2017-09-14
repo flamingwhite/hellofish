@@ -6,6 +6,7 @@ import PropTypes from 'prop-types'
 import HomeView from '../routes/Home/components/HomeView';
 import LoginView from '../routes/Login/LoginView';
 import ContactsView from '../routes/Contacts/ContactsView';
+import EventLogView from '../routes/EventLog/EventLogView';
 import EnsureLoginContainer from '../routes/EnsureLoginContainer/EnsureLoginContainer';
 import PageLayout from '../layouts/PageLayout';
 import $ from 'jquery';
@@ -52,6 +53,7 @@ class App extends React.Component {
 					<Route path="home" component={HomeView}/>
 					<Route component={EnsureLoginContainer}>
 						<IndexRoute component={ContactsView}/>
+						<Route path="logs" component={EventLogView} />
 					</Route>		
 				</Route>
 				<Route path='login' component={LoginView} />

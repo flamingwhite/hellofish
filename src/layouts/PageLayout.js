@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import { IndexLink, Link, browserHistory } from 'react-router'
 import PropTypes from 'prop-types'
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, BackTop } from 'antd';
 import {signoutWithFirebase} from '../fireQuery/fireConnection';
 import './PageLayout.scss';
 import '../../node_modules/antd/dist/antd.css';
@@ -36,12 +36,14 @@ class PageLayout extends Component {
 					style={{ lineHeight: '64px' }}
 				>
 					<Menu.Item key="1"><IndexLink to="/">Home</IndexLink></Menu.Item>
+					<Menu.Item key="2"><Link to="/logs">Logs</Link></Menu.Item>
 					<Menu.Item key="3" className="pull-right"><span onClick={signOut}>Sign Out</span></Menu.Item>
 
 				</Menu>
 				</Header>
 				<Content style={{ padding: '0 50px' }}>
 					<div className="content-body" >{children}</div>
+					<BackTop/>
 				</Content>
 				<Footer style={{ textAlign: 'center' }}>
 				Designed For Moira

@@ -1,14 +1,22 @@
 import 'babel-polyfill';
-import {contactChangeLog, tagChangeLog} from './src/dataChangeLog';
-import {addMessage, cleanContactTags, deleteTagFromContacts} from './src/manageTags';
+import  {contactCreateLog, contactDeleteLog, contactUpdateLog, tagCreateLog,tagDeleteLog, tagUpdateLog } from './src/dataChangeLog';
+import { addMessage, cleanContactTags, deleteTagFromContacts } from './src/manageTags';
 
 export {
-	contactChangeLog,
-	tagChangeLog,
 	addMessage,
 	cleanContactTags,
-	deleteTagFromContacts
+	deleteTagFromContacts,
+
+	contactCreateLog,
+	contactUpdateLog,
+	contactDeleteLog,
+
+	tagCreateLog,
+	tagDeleteLog,
+	tagUpdateLog
+
 };
+
 	
 
 
