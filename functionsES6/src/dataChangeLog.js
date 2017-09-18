@@ -1,6 +1,7 @@
 import {admin, functions} from './fireConfig';
 import {objectDifference} from './littleFn';
 import R from 'ramda';
+import moment from 'moment';
 
 const logDateChange = params => {
 	if (!params.scheme ) {
@@ -14,23 +15,24 @@ const logDateChange = params => {
 		return R.equals(flat(v1), flat(v2));
 	});
 
-	const now = new Date();
+	const now = moment();
 	return admin.database().ref('/eventLogs').push({
 		...rest,
 		data,
 		prev,
-		time: now.getTime(),
-		timeStr: now.toString()
+		time: now.valueOf(),
+		timeStr: now.format()
 	});
 }
 
-
-const logWithTable = R.curry((scheme, event,type, id) => {
+const logWithTable = R.curry((scheme, displayNameField, event,type, id) => {
 	const data = event.data.val();
 	const prev = event.data.previous.val();
+	const displayName = data[displayNameField] || prev[displayNameField];
 
 	return logDateChange({
 		id,
+		displayName,
 		scheme,
 		type,
 		data,
@@ -39,7 +41,7 @@ const logWithTable = R.curry((scheme, event,type, id) => {
 
 });
 
-const contactLog = logWithTable('contacts')
+const contactLog = logWithTable('contacts', 'name')
 
 export const contactCreateLog = functions.database.ref('/contacts/{cid}').onCreate(event => {
 	const id = event.params.cid;
@@ -57,7 +59,7 @@ export const contactDeleteLog = functions.database.ref('/contacts/{cid}').onDele
 });
 
 
-const tagLog = logWithTable('contactTags');
+const tagLog = logWithTable('contactTags', 'label');
 
 export const tagCreateLog = functions.database.ref('/contactTags/{cid}').onCreate(event => {
 	const id = event.params.cid;

@@ -25,6 +25,10 @@ var _ramda = require('ramda');
 
 var _ramda2 = _interopRequireDefault(_ramda);
 
+var _moment = require('moment');
+
+var _moment2 = _interopRequireDefault(_moment);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var logDateChange = function logDateChange(params) {
@@ -50,21 +54,23 @@ var logDateChange = function logDateChange(params) {
 	prev = _objectDifference2[1];
 
 
-	var now = new Date();
+	var now = (0, _moment2.default)();
 	return _fireConfig.admin.database().ref('/eventLogs').push((0, _extends3.default)({}, rest, {
 		data: data,
 		prev: prev,
-		time: now.getTime(),
-		timeStr: now.toString()
+		time: now.valueOf(),
+		timeStr: now.format()
 	}));
 };
 
-var logWithTable = _ramda2.default.curry(function (scheme, event, type, id) {
+var logWithTable = _ramda2.default.curry(function (scheme, displayNameField, event, type, id) {
 	var data = event.data.val();
 	var prev = event.data.previous.val();
+	var displayName = data[displayNameField] || prev[displayNameField];
 
 	return logDateChange({
 		id: id,
+		displayName: displayName,
 		scheme: scheme,
 		type: type,
 		data: data,
@@ -72,7 +78,7 @@ var logWithTable = _ramda2.default.curry(function (scheme, event, type, id) {
 	});
 });
 
-var contactLog = logWithTable('contacts');
+var contactLog = logWithTable('contacts', 'name');
 
 var contactCreateLog = exports.contactCreateLog = _fireConfig.functions.database.ref('/contacts/{cid}').onCreate(function (event) {
 	var id = event.params.cid;
@@ -89,7 +95,7 @@ var contactDeleteLog = exports.contactDeleteLog = _fireConfig.functions.database
 	return contactLog(event, 'DELETE', id);
 });
 
-var tagLog = logWithTable('contactTags');
+var tagLog = logWithTable('contactTags', 'label');
 
 var tagCreateLog = exports.tagCreateLog = _fireConfig.functions.database.ref('/contactTags/{cid}').onCreate(function (event) {
 	var id = event.params.cid;
