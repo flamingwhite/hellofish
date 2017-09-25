@@ -22,7 +22,9 @@ import ContactList from "../components/ContactList";
 @connect(state => ({
   contacts: state.contactChunk.contacts,
   touchOnly: state.env.touchOnly,
-  tags: state.tagChunk.tags
+  tags: state.tagChunk.tags,
+  dataLoading:
+    state.contactChunk.initialLoading || state.tagChunk.initialLoading
 }))
 class ContactListContainer extends Component {
   state = {
@@ -193,7 +195,12 @@ class ContactListContainer extends Component {
       deleteTagFromContacts
     } = this;
 
-    const { contacts = [], touchOnly = false, tags = [] } = this.props;
+    const {
+      contacts = [],
+      touchOnly = false,
+      tags = [],
+      dataLoading
+    } = this.props;
 
     const {
       searchKey,
@@ -228,11 +235,10 @@ class ContactListContainer extends Component {
     );
 
     return (
-      <Spin spinning size="large" tip="Loading Contacts">
+      <Spin spinning={dataLoading} size="large" tip="Loading Contacts">
         <div className="row">
-          <Tag onClick={() => this.setState({ showEventLogModal: true })}>
-            Log
-          </Tag>
+          {/* <Tag onClick={() => this.setState({ showEventModal: true })}>
+            Log</Tag> */}
           <div style={{ width: "100%", marginBottom: 10 }}>
             <Tag color="pink">{visibleContacts.length} Contacts</Tag>
             <TagListHeaderContainer
@@ -435,7 +441,8 @@ class ContactListContainer extends Component {
 ContactListContainer.propTypes = {
   contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
   touchOnly: PropTypes.bool.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.object).isRequired
+  tags: PropTypes.arrayOf(PropTypes.object).isRequired,
+  dataLoading: PropTypes.bool.isRequired
 };
 
 export default ContactListContainer;

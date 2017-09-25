@@ -1,30 +1,30 @@
 const initialState = {
-	contacts: []
+  initialLoading: true,
+  contacts: []
 };
 
+export const FETCH_CONTACT = "FETCH_CONTACT";
 
-export const FETCH_CONTACT = 'FETCH_CONTACT';
-
-const fetchContacts = payload => {
-	return {
-		type: FETCH_CONTACT,
-		payload
-	}
-};
-
+const fetchContacts = payload => ({
+  type: FETCH_CONTACT,
+  payload
+});
 
 export const actions = {
-	fetchContacts,
+  fetchContacts
 };
 
 const actionHandler = {
-	[FETCH_CONTACT]: (state, action) => ({...state, contacts: action.payload})
-}
-
+  [FETCH_CONTACT]: (state, action) => ({
+    ...state,
+    contacts: action.payload,
+    initialLoading: false
+  })
+};
 
 const contactsReducer = (state = initialState, action) => {
-	const handler = actionHandler[action.type];
-	return handler ? handler(state, action) : state;
-}
+  const handler = actionHandler[action.type];
+  return handler ? handler(state, action) : state;
+};
 
 export default contactsReducer;
