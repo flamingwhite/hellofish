@@ -80,7 +80,7 @@ class ContactListContainer extends Component {
 
   createNewContact = async ct => {
     let contact = { ...ct };
-    const { activeColorIds } = this.state;
+    const { activeColorIds, activeTagKeys } = this.state;
     this.setState({ modalLoading: true });
     let downloadURL = null;
     if (contact.cardImage && contact.cardImageName) {
@@ -94,11 +94,30 @@ class ContactListContainer extends Component {
       contact = { ...contact, downloadURL };
     }
 
-    if (activeColorIds.length === 1) {
-      contact.color = activeColorIds[0];
-    }
+    const addDownloadUrl = R.when(
+      R.always(downloadURL),
+      R.assoc("downloadUrl", downloadURL)
+    );
 
-    await createContact(contact);
+    const addColor = R.when(
+      R.always(R.length(activeColorIds) === 1),
+      R.assoc("color", R.head(activeColorIds))
+    );
+
+    const addTags = R.when(
+      R.both(
+        R.always(R.length(activeTagKeys) > 0),
+        R.compose(R.either(R.isNil, R.isEmpty), R.prop("tagKeySet"))
+      ),
+      R.assoc(
+        "tagKeySet",
+        R.reduce((acc, cur) => ({ ...acc, [cur]: true }), {}, activeTagKeys)
+      )
+    );
+
+    const newContact = R.pipe(addDownloadUrl, addColor, addTags)(contact);
+
+    await createContact(newContact);
     message.success("Contact Created");
 
     this.setState({
@@ -439,10 +458,10 @@ class ContactListContainer extends Component {
 }
 
 ContactListContainer.propTypes = {
-  contacts: PropTypes.arrayOf(PropTypes.object).isRequired,
-  touchOnly: PropTypes.bool.isRequired,
-  tags: PropTypes.arrayOf(PropTypes.object).isRequired,
-  dataLoading: PropTypes.bool.isRequired
+  contacts: PropTypes.arrayOf(PropTypes.object),
+  touchOnly: PropTypes.object,
+  tags: PropTypes.arrayOf(PropTypes.object),
+  dataLoading: PropTypes.bool
 };
 
 export default ContactListContainer;

@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Tag, AutoComplete, message } from "antd";
+import { Tag, AutoComplete, Input, message } from "antd";
+import PropTypes from "prop-types";
 
 class TagInput extends Component {
   state = {
@@ -19,14 +20,8 @@ class TagInput extends Component {
   };
 
   render() {
-    const {
-      tags,
-      addNewTag,
-      onTagSelect,
-      selectedTagSet = {},
-      onClose
-    } = this.props;
-    const { search, value } = this.state;
+    const { tags, onTagSelect, selectedTagSet = {}, onClose } = this.props;
+    const { search } = this.state;
     const { handleChange } = this;
 
     const renderTag = tag => (
@@ -42,9 +37,6 @@ class TagInput extends Component {
         )
         .map(tg => tg.label);
 
-    console.log("tags", tags);
-    console.log("activetags", selectedTagSet);
-
     return (
       <div className="tag-input-container">
         {Object.keys(selectedTagSet)
@@ -55,16 +47,16 @@ class TagInput extends Component {
           dataSource={filterTags(search)}
           className="tag-input-box"
           value={search}
-          onSearch={search => this.setState({ search })}
+          onSearch={str => this.setState({ search: str })}
           onSelect={label => {
-            console.log("selected", label);
             this.setState({ search: "" });
-            onTagSelect(tags.find(tg => tg.label == label));
+            onTagSelect(tags.find(tg => tg.label === label));
           }}
         >
           <input
             className="tag-inputbox"
             value={search}
+            onChange={e => this.setState({ search: e.target.value })}
             onKeyPress={handleChange}
           />
         </AutoComplete>
@@ -73,4 +65,11 @@ class TagInput extends Component {
   }
 }
 
+TagInput.propTypes = {
+  tags: PropTypes.arrayOf(PropTypes.object),
+  addNewTag: PropTypes.func,
+  onTagSelect: PropTypes.func,
+  selectedTagSet: PropTypes.object,
+  onClose: PropTypes.func
+};
 export default TagInput;

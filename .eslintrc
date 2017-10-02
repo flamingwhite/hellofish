@@ -6,7 +6,8 @@
   },
   "plugins": ["prettier", "react", "jsx-a11y"],
   "globals": {
-    "React": true
+    "React": true,
+    "jest": true
   },
   "extends": ["airbnb"],
   "parserOptions": {
@@ -34,8 +35,10 @@
     "func-names": "off",
     "space-before-function-paren": "off",
     "comma-dangle": "off",
-    "react/require-default-props": "off",
     "no-underscore-dangle": "off",
-    "react/forbid-prop-types": "off"
+    "react/forbid-prop-types": "off",
+    "consistent-return": "off",
+    "react/require-default-props": "off",
+    "jsx-a11y/no-static-element-interactions": "off"
   }
 }

@@ -46,7 +46,7 @@ export default class TagInputContainer extends Component {
     return createContactTag(tag)
       .then(r => {
         console.log(r);
-        message.success(label + " created");
+        message.success(`${label} created`);
         // onTagChange([...activeTagKeys, tag.key])
         onTagSetChange(
           selectedTagSet[tag.key]

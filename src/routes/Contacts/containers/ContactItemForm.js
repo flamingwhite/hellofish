@@ -147,6 +147,7 @@ class ContactItemForm extends Component {
 
     const renderField = fieldArray.map(fieldName => (
       <LabelFieldSet
+        key={fieldName}
         label={capitalize(fieldName)}
         err={
           (hasSubmitted || props[fieldName].touched) && props[fieldName].error

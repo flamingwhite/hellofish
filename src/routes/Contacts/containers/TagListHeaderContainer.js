@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Tag, Modal, Tabs, message, Card, Icon, Popconfirm, Input } from "antd";
+import PropTypes from "prop-types";
+import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from "antd";
 import TagListHeader from "../components/TagListHeader";
 import { toggleArrayItem } from "../../../lib/littleFn";
 import {
@@ -40,12 +41,11 @@ class TagListHeaderContainer extends Component {
     });
 
   handleKeyPress = e => {
-    if (e.key != "Enter") return;
+    if (e.key !== "Enter") return;
     const { tagInEdit, tempLabel } = this.state;
     if (this.editErrorMsg(tagInEdit.label, tempLabel) != null) return;
 
     updateContactTagById(tagInEdit._id, { label: tempLabel }).then(r => {
-      console.log(r);
       message.success(`Tag ${tagInEdit.label} changed to ${tempLabel}`);
       this.setState({
         tagInEdit: null,
@@ -61,13 +61,13 @@ class TagListHeaderContainer extends Component {
 
   editErrorMsg = (oldLabel = "", newLabel = "") => {
     const { tags } = this.props;
-    return !newLabel.trim()
-      ? "Cannot be blank"
-      : oldLabel.trim() == newLabel.trim()
-        ? ""
-        : tags.find(tg => (tg.label || "").trim() == newLabel.trim())
-          ? "Duplicated tag name"
-          : null;
+    if (!newLabel.trim()) return "Cannot be blank";
+    if (oldLabel.trim() === newLabel.trim()) return "";
+
+    if (tags.find(tg => (tg.label || "").trim() === newLabel.trim())) {
+      return "Duplicated tag name";
+    }
+    return null;
   };
 
   render() {
@@ -78,7 +78,7 @@ class TagListHeaderContainer extends Component {
     const renderActive = tag => (
       <div className="row" style={{ padding: 3 }}>
         <div className="col-10">
-          {tagInEdit != tag ? (
+          {tagInEdit !== tag ? (
             <a onClick={() => startEdittingLabel(tag)}>{tag.label}</a>
           ) : (
             [
@@ -112,7 +112,7 @@ class TagListHeaderContainer extends Component {
           okText="Yes"
           cancelText="No"
         >
-          <a href="#">Archive</a>
+          <a>Archive</a>
         </Popconfirm>
       </div>
     );
@@ -120,7 +120,7 @@ class TagListHeaderContainer extends Component {
     const renderArchived = tag => (
       <div className="row" style={{ padding: 3 }}>
         <div className="col-6"> {tag.label} </div>
-        <a className="col-2" href="#" onClick={() => this.unarchivedTag(tag)}>
+        <a className="col-2" onClick={() => this.unarchivedTag(tag)}>
           Restore
         </a>
         <Popconfirm
@@ -165,5 +165,12 @@ class TagListHeaderContainer extends Component {
     );
   }
 }
+
+TagListHeaderContainer.propTypes = {
+  onActiveTagsChange: PropTypes.func,
+  activeTagKeys: PropTypes.array,
+  afterTagDelete: PropTypes.func,
+  tags: PropTypes.arrayOf(PropTypes.object)
+};
 
 export default TagListHeaderContainer;
