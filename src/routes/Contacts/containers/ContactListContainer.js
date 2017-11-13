@@ -79,7 +79,7 @@ class ContactListContainer extends Component {
     });
 
   createNewContact = async ct => {
-    let contact = { ...ct };
+    const contact = { ...ct };
     const { activeColorIds, activeTagKeys } = this.state;
     this.setState({ modalLoading: true });
     let downloadURL = null;
@@ -88,10 +88,6 @@ class ContactListContainer extends Component {
         .child(contact.cardImageName)
         .put(contact.cardImage);
       downloadURL = snap.downloadURL;
-    }
-
-    if (downloadURL) {
-      contact = { ...contact, downloadURL };
     }
 
     const addDownloadUrl = R.when(
@@ -252,6 +248,40 @@ class ContactListContainer extends Component {
         (R.isEmpty(activeTagKeys) ||
           R.all(key => (c.tagKeySet || {})[key], activeTagKeys))
     );
+
+    const filter = R.allPass([
+      //   R.propEq("deleted", showOnlyDeleted),
+      propContains(searchKey, [
+        "name",
+        "email",
+        "phone",
+        "address",
+        "comments",
+        "facebook",
+        "instagram",
+        "website"
+      ]),
+      R.either(
+        R.always(R.isEmpty(activeColorIds)),
+        R.compose(
+          R.flip(R.contains)(activeColorIds),
+          // id => activeColorIds.includes(id),
+          // id => R.contains(id, activeColorIds),
+          R.defaultTo("white"),
+          R.prop("color")
+        )
+      ),
+      R.either(
+        R.always(R.isEmpty(activeTagKeys)),
+        R.compose(
+          set => R.all(key => set[key], activeTagKeys),
+          R.defaultTo({}),
+          R.prop("tagKeySet")
+        )
+      )
+    ]);
+
+    const vs = R.filter(filter, contacts);
 
     return (
       <Spin spinning={dataLoading} size="large" tip="Loading Contacts">

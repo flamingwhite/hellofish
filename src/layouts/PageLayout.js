@@ -30,9 +30,6 @@ const PageLayout = props => {
           <Menu.Item key="1">
             <IndexLink to="/">Home</IndexLink>
           </Menu.Item>
-          <Menu.Item key="2">
-            <Link to="/logs">Logs</Link>
-          </Menu.Item>
           <Menu.Item key="3" className="pull-right">
             <span onClick={signOut}>Sign Out</span>
           </Menu.Item>

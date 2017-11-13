@@ -5,21 +5,40 @@ import { Tag, Modal, Tabs, message, Icon, Popconfirm, Input } from "antd";
 import TagListHeader from "../components/TagListHeader";
 import { toggleArrayItem } from "../../../lib/littleFn";
 import {
+  createContactTag,
   updateContactTagById,
   deleteContactTagById
 } from "../../../fireQuery/tagsQuery";
+import SimpleInputButton from "../../../commonCmps/SimpleInputButton";
+import { parseTagFromLabel } from "../contactUtility";
 
 @connect(state => ({
   tags: state.tagChunk.tags
 }))
 class TagListHeaderContainer extends Component {
   state = {
-    edittingTags: false
+    edittingTags: false,
+    newTagName: ""
   };
 
   onTagClick = tag => {
     const { onActiveTagsChange, activeTagKeys } = this.props;
     onActiveTagsChange(toggleArrayItem(activeTagKeys, tag.key));
+  };
+
+  addNewTag = label => {
+    const tag = parseTagFromLabel(label);
+    return createContactTag(tag).then(() =>
+      message.success(`Tag ${tag.key} Created`)
+    );
+  };
+
+  newTagNameError = label => {
+    const { tags } = this.props;
+    if (tags.find(tg => (tg.label || "").trim() === label.trim())) {
+      return "Existed!";
+    }
+    return "";
   };
 
   unarchivedTag = tag => {
@@ -65,15 +84,21 @@ class TagListHeaderContainer extends Component {
     if (oldLabel.trim() === newLabel.trim()) return "";
 
     if (tags.find(tg => (tg.label || "").trim() === newLabel.trim())) {
-      return "Duplicated tag name";
+      return "Existed!";
     }
     return null;
   };
 
   render() {
     const { onActiveTagsChange, tags, ...rest } = this.props;
-    const { edittingTags, tagInEdit, tempLabel } = this.state;
-    const { startEdittingLabel, handleKeyPress, editErrorMsg } = this;
+    const { edittingTags, tagInEdit, tempLabel, newTagName } = this.state;
+    const {
+      addNewTag,
+      newTagNameError,
+      startEdittingLabel,
+      handleKeyPress,
+      editErrorMsg
+    } = this;
 
     const renderActive = tag => (
       <div className="row" style={{ padding: 3 }}>
@@ -153,6 +178,12 @@ class TagListHeaderContainer extends Component {
           >
             <Tabs>
               <Tabs.TabPane tab="Active Tags" key="1">
+                <SimpleInputButton
+                  text="New Tag"
+                  okLabel="Create"
+                  getErrorMsg={newTagNameError}
+                  onSubmit={addNewTag}
+                />
                 {tags.filter(tg => !tg.archived).map(renderActive)}
               </Tabs.TabPane>
               <Tabs.TabPane tab="Archived Tags" key="2">

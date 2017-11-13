@@ -1,12 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { message, Spin } from "antd";
-import TagInput from "../components/TagInput";
-import {
-  createContactTag,
-  updateContactTagById
-} from "../../../fireQuery/tagsQuery";
 import R from "ramda";
+import TagInput from "../components/TagInput";
+import { createContactTag } from "../../../fireQuery/tagsQuery";
+import { parseTagFromLabel } from "../contactUtility";
 
 @connect(state => ({
   tags: state.tagChunk.tags
@@ -30,15 +28,7 @@ export default class TagInputContainer extends Component {
     const { onTagSetChange, selectedTagSet } = this.props;
     if (!label) return;
 
-    const cleanLabel = label
-      .split(" ")
-      .reduce((acc, cur) => acc + cur.slice(0, 1).toUpperCase() + cur.slice(1));
-
-    const tag = {
-      key: cleanLabel,
-      label: cleanLabel
-    };
-
+    const tag = parseTagFromLabel(label);
     this.setState({
       loading: true
     });
