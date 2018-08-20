@@ -3,25 +3,38 @@ const firebase = require("firebase");
 
 console.log("connection to firebase with env", env);
 
-let config = {
-  apiKey: "AIzaSyCOj36XbC1HiadXY54awf4ygrJ2adW5YD0",
-  authDomain: "miaocontacts.firebaseapp.com",
-  databaseURL: "https://miaocontacts.firebaseio.com",
-  projectId: "miaocontacts",
-  storageBucket: "miaocontacts.appspot.com",
-  messagingSenderId: "979490753402"
+
+//Config for miaocontact-mirror
+var config = {
+  apiKey: "AIzaSyBUWYArlBW5bYGvwC_PrN0l-z0danRxdPg",
+  authDomain: "contacts-mirror.firebaseapp.com",
+  databaseURL: "https://contacts-mirror.firebaseio.com",
+  projectId: "contacts-mirror",
+  storageBucket: "contacts-mirror.appspot.com",
+  messagingSenderId: "104914887848"
 };
 
-if (env == "production") {
-  config = {
-    apiKey: "AIzaSyCR_sxrcsU0LaPC2nDpcZc9uZ7W0yzLlN0",
-    authDomain: "miaocontacts-production.firebaseapp.com",
-    databaseURL: "https://miaocontacts-production.firebaseio.com",
-    projectId: "miaocontacts-production",
-    storageBucket: "miaocontacts-production.appspot.com",
-    messagingSenderId: "969455618874"
-  };
-}
+
+//Below it the config for miao-contacts production
+// let config = {
+//   apiKey: "AIzaSyCOj36XbC1HiadXY54awf4ygrJ2adW5YD0",
+//   authDomain: "miaocontacts.firebaseapp.com",
+//   databaseURL: "https://miaocontacts.firebaseio.com",
+//   projectId: "miaocontacts",
+//   storageBucket: "miaocontacts.appspot.com",
+//   messagingSenderId: "979490753402"
+// };
+
+// if (env == "production") {
+//   config = {
+//     apiKey: "AIzaSyCR_sxrcsU0LaPC2nDpcZc9uZ7W0yzLlN0",
+//     authDomain: "miaocontacts-production.firebaseapp.com",
+//     databaseURL: "https://miaocontacts-production.firebaseio.com",
+//     projectId: "miaocontacts-production",
+//     storageBucket: "miaocontacts-production.appspot.com",
+//     messagingSenderId: "969455618874"
+//   };
+// }
 
 firebase.initializeApp(config);
 
